@@ -1,0 +1,68 @@
+Customers: (Primary Key: Customer ID)
+
+Name
+Contact Information (phone number, email)
+Address
+Account(s) (Foreign Key) # One-to-Many relationship with Accounts
+Products/Services: (Primary Key: Product/Service ID)
+
+Name
+Description
+Price
+Type (e.g., mobile data plan, internet plan, TV package)
+Accounts: (Primary Key: Account ID)
+
+Customer ID (Foreign Key)
+Account type (individual, business)
+Account status (active, inactive)
+Subscriptions (Foreign Key) # One-to-Many relationship with Subscriptions
+Billing information (payment method, outstanding balance)
+Subscriptions: (Primary Key: Subscription ID)
+
+Account ID (Foreign Key)
+Product/Service ID (Foreign Key)
+Start date
+End date (if applicable)
+Renewal information (automatic, manual)
+Orders: (Primary Key: Order ID)
+
+Customer ID (Foreign Key) # Can be linked directly to Customer or via Account (Foreign Key) depending on your business flow
+Date
+Order details (products/services ordered, quantities)
+Order status (pending, processing, completed, cancelled)
+Payment information
+Equipment: (Primary Key: Equipment ID)
+
+Model number
+Type (e.g., modem, router)
+Serial number
+Status (active, inactive, loaned)
+Assigned account/customer (Foreign Key) # Can be linked to Account or Customer depending on how equipment is managed
+Employees: (Primary Key: Employee ID)
+
+Name
+Contact information
+Department
+Role (e.g., customer service representative, technician)
+Support Tickets: (Primary Key: Ticket ID)
+
+Customer ID (Foreign Key)
+Account ID (Foreign Key) # Can be linked to either Customer or Account depending on support ticketing process
+Date submitted
+Issue description
+Resolution details
+Status (open, closed)
+Payments: (Primary Key: Payment ID)
+
+Customer ID (Foreign Key)
+Account ID (Foreign Key) # Can be linked to either Customer or Account depending on billing process
+Date
+Amount
+Payment method
+
+
+Sales/Transactions (covered by Orders)
+Billing/Invoicing (covered by Accounts and Payments)
+Sites of towers (can be linked to Network Infrastructure)
+POS stores (can be linked to a separate Locations entity or integrated with Accounts)
+Warehouse (can be linked to a Products/Services entity with additional attributes for stock management)
