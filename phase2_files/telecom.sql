@@ -1,8 +1,10 @@
+-- database creation
+
 CREATE DATABASE IF NOT EXISTS TELECOM;
 
 USE TELECOM;
 
-CREATE TABLE Customers (
+CREATE TABLE IF NOT EXISTS Customers (
   cid INT NOT NULL AUTO_INCREMENT,
   customer_name VARCHAR(50) NOT NULL,
   contact_info VARCHAR(50) NOT NULL,
@@ -10,7 +12,7 @@ CREATE TABLE Customers (
   PRIMARY KEY (cid)
 );
 
-CREATE TABLE Accounts (
+CREATE TABLE IF NOT EXISTS Accounts (
   aid INT NOT NULL AUTO_INCREMENT,
   cid INT NOT NULL,
   account_type ENUM('Individual','Business'),
@@ -19,7 +21,7 @@ CREATE TABLE Accounts (
   FOREIGN KEY (cid) REFERENCES Customers(cid)
 );
 
-CREATE TABLE Services (
+CREATE TABLE IF NOT EXISTS Services (
   pid INT NOT NULL AUTO_INCREMENT,
   service_name VARCHAR(50) NOT NULL,
   description VARCHAR(50) NOT NULL,
@@ -27,7 +29,7 @@ CREATE TABLE Services (
   PRIMARY KEY (pid)
 );
 
-CREATE TABLE SIM_Cards (
+CREATE TABLE IF NOT EXISTS SIM_Cards (
   IMSI VARCHAR(50) NOT NULL,
   aid INT, -- Could be NULL if the SIM Card exists but is not linked to any account yet.
   phone_number VARCHAR(50) NOT NULL,
@@ -42,7 +44,7 @@ CREATE TABLE SIM_Cards (
   FOREIGN KEY (aid) REFERENCES Accounts(aid)
 );
 
-CREATE TABLE Subscriptions (
+CREATE TABLE IF NOT EXISTS Subscriptions (
   sub_id INT NOT NULL AUTO_INCREMENT,
   pid INT NOT NULL,
   IMSI VARCHAR(50) NOT NULL,
@@ -54,7 +56,7 @@ CREATE TABLE Subscriptions (
   FOREIGN KEY (IMSI) REFERENCES SIM_Cards(IMSI)
 );
 
-CREATE TABLE Support_Tickets (
+CREATE TABLE IF NOT EXISTS Support_Tickets (
   tid INT NOT NULL AUTO_INCREMENT,
   aid INT NOT NULL,
   issue_description VARCHAR(50) NOT NULL,
@@ -64,7 +66,7 @@ CREATE TABLE Support_Tickets (
   FOREIGN KEY (aid) REFERENCES Accounts(aid)
 );
 
-CREATE TABLE Employees (
+CREATE TABLE IF NOT EXISTS Employees (
   eid INT NOT NULL AUTO_INCREMENT,
   employee_name VARCHAR(50) NOT NULL,
   contact_info VARCHAR(50) NOT NULL,
@@ -74,7 +76,7 @@ CREATE TABLE Employees (
   PRIMARY KEY (eid)
 );
 
-CREATE TABLE Payments (
+CREATE TABLE IF NOT EXISTS Payments (
   payment_id INT NOT NULL AUTO_INCREMENT,
   aid INT NOT NULL,
   eid INT,
@@ -89,7 +91,7 @@ CREATE TABLE Payments (
   FOREIGN KEY (sub_id) REFERENCES Subscriptions(sub_id)
 );
 
-CREATE TABLE Departments (
+CREATE TABLE IF NOT EXISTS Departments (
   did INT NOT NULL AUTO_INCREMENT,
   eid INT NOT NULL,
   department_description VARCHAR(50),
@@ -100,7 +102,7 @@ CREATE TABLE Departments (
   FOREIGN KEY (eid) REFERENCES Employees(eid)
 );
 
-CREATE TABLE Equipment (
+CREATE TABLE IF NOT EXISTS Equipment (
   eqid INT NOT NULL AUTO_INCREMENT,
   equipment_name VARCHAR(50) NOT NULL,
   model VARCHAR(50) NOT NULL,
@@ -108,3 +110,76 @@ CREATE TABLE Equipment (
   equipment_status ENUM('Active', 'Inactive'),
   PRIMARY KEY (eqid)
 );
+
+
+-- sample testing data
+
+LOAD DATA INFILE 'data/customers.csv'
+INTO TABLE Customers
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/accounts.csv'
+INTO TABLE Accounts
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/departments.csv'
+INTO TABLE Departments
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/employees.csv'
+INTO TABLE Employees
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/equipment.csv'
+INTO TABLE Equipment
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/payments.csv'
+INTO TABLE Payments
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/services.csv'
+INTO TABLE Services
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/sim_cards.csv'
+INTO TABLE SIM_Cards
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/subscriptions.csv'
+INTO TABLE Subscriptions
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
+
+LOAD DATA INFILE 'data/support_tickets.csv'
+INTO TABLE Support_Tickets
+FIELDS TERMINATED BY ','
+ENCLOSED BY '"'
+LINES TERMINATED BY '\n'
+IGNORE 1 ROWS;
