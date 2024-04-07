@@ -110,10 +110,10 @@ II. Relationships:
 
 Relationship: One-to-Many (A customer can have multiple accounts)
 Participation: Total for Customers, Partial for Accounts (Every customer must have at least one account, but an account can exist without being associated with a customer)
-2. Customers - SIM Cards/Phone Numbers:
+2. Accounts - SIM Cards/Phone Numbers:
 
-Relationship: One-to-Many (A customer can have multiple SIM cards/phone numbers)
-Participation: Total for Customers, Partial for SIM Cards/Phone Numbers (Every customer must have at least one SIM card/phone number, but a SIM card/phone number can exist without being associated with a customer)
+Relationship: One-to-Many (An account can have multiple SIM cards/phone numbers)
+Participation: Total for Accounts, Partial for SIM Cards/Phone Numbers (Every account must have at least one SIM card/phone number, but a SIM card/phone number can exist without being associated with a account)
 3. Accounts - Products/Services:
 
 Relationship: Many-to-Many (An account can have multiple products/services, and a product/service can be associated with multiple accounts)
