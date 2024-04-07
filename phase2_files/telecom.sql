@@ -192,6 +192,9 @@ CREATE TABLE IF NOT EXISTS Equipment (
 -- (1, 'Individual', 'Active'),
 -- (2, 'Business', 'Inactive');
 
+
+-- sample inserts since the loading of the csv files doesnt wanna work
+
 -- INSERT INTO Services (service_name, description, price) VALUES
 -- ('Mobile Data Plan', 'Unlimited data for smartphones', 19.99),
 -- ('Internet Plan', 'High-speed internet access', 29.99),
