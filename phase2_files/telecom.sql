@@ -29,7 +29,7 @@ CREATE TABLE Services (
 
 CREATE TABLE SIM_Cards (
     IMSI VARCHAR(50) NOT NULL,
-    aid INT NOT NULL,
+    aid INT, -- Could be NULL, if it was not linked to an account, but the card itself still exists.
     Phone_Number VARCHAR(50) NOT NULL,
     Status ENUM('Active', 'Inactive'),
     ICCID VARCHAR(50) NOT NULL,
@@ -46,8 +46,8 @@ CREATE TABLE Subscriptions (
     sub_id INT NOT NULL AUTO_INCREMENT,
     pid INT NOT NULL,
     IMSI VARCHAR(50) NOT NULL,
-    Start_Date DATE NOT NULL,
-    End_Date DATE NOT NULL,
+    Starting_Date DATE NOT NULL,
+    Ending_Date DATE NOT NULL,
     Renewal ENUM('Auto', 'Manual'),
     PRIMARY KEY (sub_id),
     FOREIGN KEY (pid) REFERENCES Services(pid),
