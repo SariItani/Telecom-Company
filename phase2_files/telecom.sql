@@ -1,10 +1,7 @@
--- Create Database
 CREATE DATABASE TelecomCompany;
 
--- Use the database
 USE TelecomCompany;
 
--- Create Tables with Sample Constraints (modify data types and constraints as needed)
 CREATE TABLE Customers (
   CustomerID INT PRIMARY KEY AUTO_INCREMENT,
   Name VARCHAR(255) NOT NULL,
