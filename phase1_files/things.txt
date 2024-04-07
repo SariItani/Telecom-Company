@@ -66,3 +66,79 @@ Billing/Invoicing (covered by Accounts and Payments)
 Sites of towers (can be linked to Network Infrastructure)
 POS stores (can be linked to a separate Locations entity or integrated with Accounts)
 Warehouse (can be linked to a Products/Services entity with additional attributes for stock management)
+
+
+
+
+=============================================================================== AFTER REVISIOM:
+I. Entities:
+
+1. Customer:
+
+Attributes: CustomerID (PK), Name, IDCardNumber (optional), Age (optional), ContactInfo (phone number, email)
+2. Account:
+
+Attributes: AccountID (PK), CustomerID (FK to Customer), AccountType (ENUM: 'Individual', 'Business'), AccountStatus (ENUM: 'Active', 'Inactive'), PhoneNumbers (text)
+3. SIMCard: (Optional, if separate from Account)
+
+Attributes: SIMCardID (PK), ICCN, PhoneNumber (unique), Status (ENUM: 'Active', 'Inactive')
+4. Products/Services: (Existing)
+
+Attributes: ProductID (PK), Name, Description, Price, Type
+5. Subscription:
+
+Attributes: SubscriptionID (PK), AccountID (FK to Account), ProductID (FK to Products/Services), StartDate, EndDate (optional), RenewalInformation (ENUM: 'Automatic', 'Manual')
+6. Payment:
+
+Attributes: PaymentID (PK), AccountID (FK to Account), CustomerID (FK to Customer, optional for direct payments), Date, Amount, PaymentMethod (ENUM: 'Cash', 'Credit Card', 'Debit Card', 'Other')
+7. Employee:  (Optional - Infrastructure Management)
+
+Attributes: EmployeeID (PK), Name, ContactInfo, Department, Role
+8. Site:  (Optional - Infrastructure Management)
+
+Attributes: SiteID (PK), Location (address), Type (e.g., cell tower, exchange)
+9. Warehouse:  (Optional - Infrastructure Management)
+
+Attributes: WarehouseID (PK), Location (address), Capacity (storage capacity)
+10. Equipment:  (Optional - Infrastructure Management)
+
+Attributes: EquipmentID (PK), ModelNumber, Type (e.g., modem, router, antenna), SerialNumber, Status (ENUM: 'Active', 'Inactive', 'Loaned')
+
+II. Relationships:
+
+1. Customers - Accounts:
+
+Relationship: One-to-Many (A customer can have multiple accounts)
+Participation: Total for Customers, Partial for Accounts (Every customer must have at least one account, but an account can exist without being associated with a customer)
+2. Customers - SIM Cards/Phone Numbers:
+
+Relationship: One-to-Many (A customer can have multiple SIM cards/phone numbers)
+Participation: Total for Customers, Partial for SIM Cards/Phone Numbers (Every customer must have at least one SIM card/phone number, but a SIM card/phone number can exist without being associated with a customer)
+3. Accounts - Products/Services:
+
+Relationship: Many-to-Many (An account can have multiple products/services, and a product/service can be associated with multiple accounts)
+Participation: Partial for both Accounts and Products/Services (Not every account must have products/services, and not every product/service must be associated with an account)
+4. Infrastructure Sites - Equipment:
+
+Relationship: One-to-Many (An infrastructure site can have multiple pieces of equipment)
+Participation: Total for Infrastructure Sites, Partial for Equipment (Every infrastructure site must have at least one piece of equipment, but equipment can exist without being associated with an infrastructure site)
+5. Employees - Infrastructure Sites:
+
+Relationship: Many-to-Many (An employee can manage multiple infrastructure sites, and an infrastructure site can be managed by multiple employees)
+Participation: Partial for both Employees and Infrastructure Sites (Not every employee must manage an infrastructure site, and not every infrastructure site must be managed by an employee)
+6. POS (Points of Sales) - Employees:
+
+Relationship: One-to-Many (A POS location can have multiple employees)
+Participation: Partial for POS and Total for Employees (Every POS location must have at least one employee, but an employee can work at multiple POS locations)
+7. POS (Points of Sales) - Orders/Payments:
+
+Relationship: One-to-Many (A POS location can have multiple orders/payments)
+Participation: Partial for POS and Total for Orders/Payments (Every POS location must have at least one order/payment, but an order/payment can exist without being associated with a POS location)
+8. Customers - Orders/Payments:
+
+Relationship: One-to-Many (A customer can have multiple orders/payments)
+Participation: Total for Customers, Partial for Orders/Payments (Every customer must have at least one order/payment, but an order/payment can exist without being associated with a customer)
+9. Customers - Support Tickets:
+
+Relationship: One-to-Many (A customer can have multiple support tickets)
+Participation: Total for Customers, Partial for Support Tickets (Every customer must have at least one support ticket, but a support ticket can exist without being associated with a customer)
