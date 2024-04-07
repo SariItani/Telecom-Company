@@ -195,43 +195,43 @@ CREATE TABLE IF NOT EXISTS Equipment (
 
 -- sample inserts since the loading of the csv files doesnt wanna work
 
--- INSERT INTO Services (service_name, description, price) VALUES
--- ('Mobile Data Plan', 'Unlimited data for smartphones', 19.99),
--- ('Internet Plan', 'High-speed internet access', 29.99),
--- ('TV Package', 'Streaming TV channels', 39.99);
+INSERT INTO Services (service_name, description, price) VALUES
+('Mobile Data Plan', 'Unlimited data for smartphones', 19.99),
+('Internet Plan', 'High-speed internet access', 29.99),
+('TV Package', 'Streaming TV channels', 39.99);
 
--- INSERT INTO SIM_Cards (IMSI, aid, phone_number, sim_status, ICCID, PUK, PIN) VALUES
--- (123456789, 1, '+1234567890', 'Active', '1234567890123456', '123456', '789012'),
--- (987654321, 2, '+9876543210', 'Inactive', '9876543210987654', '654321', '098765');
+INSERT INTO SIM_Cards (IMSI, aid, phone_number, sim_status, ICCID, PUK, PIN) VALUES
+(123456789, 1, '+1234567890', 'Active', '1234567890123456', '123456', '789012'),
+(987654321, 2, '+9876543210', 'Inactive', '9876543210987654', '654321', '098765');
 
--- INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES
--- (1, 123456789, '2024-01-01', '2024-12-31', 'Auto'),
--- (2, 987654321, '2024-02-01', '2024-11-30', 'Manual');
+INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES
+(1, 123456789, '2024-01-01', '2024-12-31', 'Auto'),
+(2, 987654321, '2024-02-01', '2024-11-30', 'Manual');
 
--- INSERT INTO Support_Tickets (aid, issue_description, ticket_status, resolution_details) VALUES
--- (1, 'Slow internet connection', 'Active', 'Technician dispatched'),
--- (2, 'No network coverage', 'Inactive', 'N/A');
+INSERT INTO Support_Tickets (aid, issue_description, ticket_status, resolution_details) VALUES
+(1, 'Slow internet connection', 'Active', 'Technician dispatched'),
+(2, 'No network coverage', 'Inactive', 'N/A');
 
--- INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title) VALUES
--- ('Alice Johnson', '+1122334455', '789 Oak St', 'POS', 'Customer Service Representative'),
--- ('Bob Smith', '+9988776655', '456 Pine St', 'Site', 'Technician'),
--- ('Charlie Brown', '+5544332211', '123 Maple St', 'Warehouse', 'Manager'),
--- ('David Mason', 'mason@gmail.com', '564 Mason St', 'POS', 'Manager'),
--- ('Satan', 'the devil', '666 Devil St', 'Site', 'Manager');
+INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title) VALUES
+('Alice Johnson', '+1122334455', '789 Oak St', 'POS', 'Customer Service Representative'),
+('Bob Smith', '+9988776655', '456 Pine St', 'Site', 'Technician'),
+('Charlie Brown', '+5544332211', '123 Maple St', 'Warehouse', 'Manager'),
+('David Mason', 'mason@gmail.com', '564 Mason St', 'POS', 'Manager'),
+('Satan', 'the devil', '666 Devil St', 'Site', 'Manager');
 
--- INSERT INTO Payments (aid, eid, sub_id, due_date, amount, payment_method, payment_date) VALUES
--- (1, 1, 1, '2024-03-15', 19.99, 'Credit Card', '2024-03-15'),
--- (2, 2, 2, '2024-03-20', 29.99, 'Cash', '2024-03-20');
+INSERT INTO Payments (aid, eid, sub_id, due_date, amount, payment_method, payment_date) VALUES
+(1, 1, 1, '2024-03-15', 19.99, 'Credit Card', '2024-03-15'),
+(2, 2, 2, '2024-03-20', 29.99, 'Cash', '2024-03-20');
 
--- INSERT INTO Departments (eid, department_description, capacity, department_address, department_name) VALUES
--- (3, 'Point of Sales', NULL, '789 Oak St', 'POS'),
--- (4, 'Network Site', 50, '456 Pine St', 'Site'),
--- (5, 'Equipment Warehouse', 200, '123 Maple St', 'Warehouse');
+INSERT INTO Departments (eid, department_description, capacity, department_address, department_name) VALUES
+(3, 'Point of Sales', NULL, '789 Oak St', 'POS'),
+(4, 'Network Site', 50, '456 Pine St', 'Site'),
+(5, 'Equipment Warehouse', 200, '123 Maple St', 'Warehouse');
 
--- INSERT INTO Equipment (equipment_name, model, department, equipment_status) VALUES
--- ('Modem', 'ABC123', 'POS', 'Active'),
--- ('Router', 'XYZ456', 'Site', 'Inactive'),
--- ('Antenna', '123ABC', 'Warehouse', 'Active');
+INSERT INTO Equipment (equipment_name, model, department, equipment_status) VALUES
+('Modem', 'ABC123', 'POS', 'Active'),
+('Router', 'XYZ456', 'Site', 'Inactive'),
+('Antenna', '123ABC', 'Warehouse', 'Active');
 
 
 -- Sample Queries to Test the Telecom Database
