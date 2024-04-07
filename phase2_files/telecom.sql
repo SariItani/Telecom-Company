@@ -2,7 +2,6 @@ CREATE DATABASE TELECOM;
 
 USE TELECOM
 
--- Create Customers table
 CREATE TABLE Customers (
   cid INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(50) NOT NULL,
@@ -11,7 +10,6 @@ CREATE TABLE Customers (
   PRIMARY KEY (cid)
 );
 
--- Create Accounts table
 CREATE TABLE Accounts (
   aid INT NOT NULL AUTO_INCREMENT,
   cid INT NOT NULL,
@@ -21,16 +19,14 @@ CREATE TABLE Accounts (
   FOREIGN KEY (cid) REFERENCES Customers(cid)
 );
 
--- Create Services table
 CREATE TABLE Services (
   pid INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(50) NOT NULL,
-  Description VARCHAR(50) NOT NULL,
+  Description VARCHAR(150) NOT NULL,
   Price DECIMAL(10,2) NOT NULL,
   PRIMARY KEY (pid)
 );
 
--- Create SIM Cards table
 CREATE TABLE SIM_Cards (
   IMSI VARCHAR(50) NOT NULL,
   aid INT NOT NULL,
@@ -46,7 +42,6 @@ CREATE TABLE SIM_Cards (
   FOREIGN KEY (aid) REFERENCES Accounts(aid)
 );
 
--- Create Subscriptions table
 CREATE TABLE Subscriptions (
   sub_id INT NOT NULL AUTO_INCREMENT,
   pid INT NOT NULL,
@@ -59,18 +54,16 @@ CREATE TABLE Subscriptions (
   FOREIGN KEY (IMSI) REFERENCES SIM_Cards(IMSI)
 );
 
--- Create Support Tickets table
 CREATE TABLE Support_Tickets (
   tid INT NOT NULL AUTO_INCREMENT,
   aid INT NOT NULL,
-  IssueDescription VARCHAR(50) NOT NULL,
+  IssueDescription VARCHAR(150) NOT NULL,
   Status ENUM('Active', 'Inactive'),
-  ResolutionDetails VARCHAR(50),
+  ResolutionDetails VARCHAR(150),
   PRIMARY KEY (tid),
   FOREIGN KEY (aid) REFERENCES Accounts(aid)
 );
 
--- Create Employees table
 CREATE TABLE Employees (
   eid INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(50) NOT NULL,
@@ -81,7 +74,6 @@ CREATE TABLE Employees (
   PRIMARY KEY (eid)
 );
 
--- Create Payments table
 CREATE TABLE Payments (
   pay_id INT NOT NULL AUTO_INCREMENT,
   aid INT NOT NULL,
@@ -97,11 +89,10 @@ CREATE TABLE Payments (
   FOREIGN KEY (sub_id) REFERENCES Subscriptions(sub_id)
 );
 
--- Create Departments table
 CREATE TABLE Departments (
   did INT NOT NULL AUTO_INCREMENT,
   eid INT NOT NULL,
-  Description VARCHAR(50),
+  Description VARCHAR(150),
   Capacity INT,
   Address VARCHAR(50) NOT NULL,
   Name ENUM('POS', 'Site', 'Warehouse'),
@@ -109,7 +100,6 @@ CREATE TABLE Departments (
   FOREIGN KEY (eid) REFERENCES Employees(eid)
 );
 
--- Create Equipment table
 CREATE TABLE Equipment (
   eqid INT NOT NULL AUTO_INCREMENT,
   Name VARCHAR(50) NOT NULL,
