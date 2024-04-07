@@ -4,9 +4,9 @@ USE TELECOM;
 
 CREATE TABLE Customers (
     cid INT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(50) NOT NULL,
+    Customer_Name VARCHAR(50) NOT NULL,
     ContactInfo VARCHAR(50) NOT NULL,
-    Address VARCHAR(50) NOT NULL,
+    Addr VARCHAR(50) NOT NULL,
     PRIMARY KEY (cid)
 );
 
@@ -14,15 +14,15 @@ CREATE TABLE Accounts (
     aid INT NOT NULL AUTO_INCREMENT,
     cid INT NOT NULL,
     AccountType ENUM('Individual', 'Business'),
-    Status ENUM('Active', 'Inactive'),
+    Account_Status ENUM('Active', 'Inactive'),
     PRIMARY KEY (aid),
     FOREIGN KEY (cid) REFERENCES Customers(cid)
 );
 
 CREATE TABLE Services (
     pid INT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(50) NOT NULL,
-    Description VARCHAR(150) NOT NULL,
+    Serive_Name VARCHAR(50) NOT NULL,
+    Describe VARCHAR(150) NOT NULL,
     Price DECIMAL(10, 2) NOT NULL,
     PRIMARY KEY (pid)
 );
@@ -31,7 +31,7 @@ CREATE TABLE SIM_Cards (
     IMSI VARCHAR(50) NOT NULL,
     aid INT, -- Could be NULL, if it was not linked to an account, but the card itself still exists.
     Phone_Number VARCHAR(50) NOT NULL,
-    Status ENUM('Active', 'Inactive'),
+    SIM_Status ENUM('Active', 'Inactive'),
     ICCID VARCHAR(50) NOT NULL,
     PUK VARCHAR(50) NOT NULL,
     PIN VARCHAR(50) NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE Support_Tickets (
     tid INT NOT NULL AUTO_INCREMENT,
     aid INT NOT NULL,
     IssueDescription VARCHAR(150) NOT NULL,
-    Status ENUM('Active', 'Inactive'),
+    Ticket_Status ENUM('Complete', 'Incomplete'),
     ResolutionDetails VARCHAR(150),
     PRIMARY KEY (tid),
     FOREIGN KEY (aid) REFERENCES Accounts(aid)
@@ -66,9 +66,9 @@ CREATE TABLE Support_Tickets (
 
 CREATE TABLE Employees (
     eid INT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(50) NOT NULL,
+    Employee_Name VARCHAR(50) NOT NULL,
     ContactInfo VARCHAR(50) NOT NULL,
-    Address VARCHAR(50) NOT NULL,
+    Addr VARCHAR(50) NOT NULL,
     Department ENUM('POS', 'Site', 'Warehouse'),
     Job_Title VARCHAR(50) NOT NULL,
     PRIMARY KEY (eid)
@@ -82,7 +82,7 @@ CREATE TABLE Payments (
     Due_Date DATE NOT NULL,
     Amount DECIMAL(10, 2) NOT NULL,
     Method ENUM('Credit Card', 'Cash'),
-    Date DATE,
+    Done_Date DATE,
     PRIMARY KEY (pay_id),
     FOREIGN KEY (aid) REFERENCES Accounts(aid),
     FOREIGN KEY (eid) REFERENCES Employees(eid),
@@ -92,19 +92,19 @@ CREATE TABLE Payments (
 CREATE TABLE Departments (
     did INT NOT NULL AUTO_INCREMENT,
     eid INT NOT NULL,
-    Description VARCHAR(150),
+    Describe VARCHAR(150),
     Capacity INT,
-    Address VARCHAR(50) NOT NULL,
-    Name ENUM('POS', 'Site', 'Warehouse'),
+    Addr VARCHAR(50) NOT NULL,
+    Departmetn_Name ENUM('POS', 'Site', 'Warehouse'),
     PRIMARY KEY (did),
     FOREIGN KEY (eid) REFERENCES Employees(eid)
 );
 
 CREATE TABLE Equipment (
     eqid INT NOT NULL AUTO_INCREMENT,
-    Name VARCHAR(50) NOT NULL,
+    Equipment_Name VARCHAR(50) NOT NULL,
     Model VARCHAR(50) NOT NULL,
     Department ENUM('POS', 'Site', 'Warehouse'),
-    Status ENUM('Active', 'Inactive'),
+    Equipment_Status ENUM('Active', 'Inactive'),
     PRIMARY KEY (eqid)
 );
