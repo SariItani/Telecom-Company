@@ -184,46 +184,121 @@ CREATE TABLE IF NOT EXISTS Equipment (
 -- LINES TERMINATED BY '\n'
 -- IGNORE 1 ROWS;
 
-INSERT INTO Customers (customer_name, contact_info, customer_address) VALUES
-('John Doe', '+1234567890', '123 Main St'),
-('Jane Smith', '+9876543210', '456 Elm St');
+-- INSERT INTO Customers (customer_name, contact_info, customer_address) VALUES
+-- ('John Doe', '+1234567890', '123 Main St'),
+-- ('Jane Smith', '+9876543210', '456 Elm St');
 
-INSERT INTO Accounts (cid, account_type, account_status) VALUES
-(1, 'Individual', 'Active'),
-(2, 'Business', 'Inactive');
+-- INSERT INTO Accounts (cid, account_type, account_status) VALUES
+-- (1, 'Individual', 'Active'),
+-- (2, 'Business', 'Inactive');
 
-INSERT INTO Services (service_name, description, price) VALUES
-('Mobile Data Plan', 'Unlimited data for smartphones', 19.99),
-('Internet Plan', 'High-speed internet access', 29.99),
-('TV Package', 'Streaming TV channels', 39.99);
+-- INSERT INTO Services (service_name, description, price) VALUES
+-- ('Mobile Data Plan', 'Unlimited data for smartphones', 19.99),
+-- ('Internet Plan', 'High-speed internet access', 29.99),
+-- ('TV Package', 'Streaming TV channels', 39.99);
 
-INSERT INTO SIM_Cards (IMSI, aid, phone_number, sim_status, ICCID, PUK, PIN) VALUES
-(123456789, 1, '+1234567890', 'Active', '1234567890123456', '123456', '789012'),
-(987654321, 2, '+9876543210', 'Inactive', '9876543210987654', '654321', '098765');
+-- INSERT INTO SIM_Cards (IMSI, aid, phone_number, sim_status, ICCID, PUK, PIN) VALUES
+-- (123456789, 1, '+1234567890', 'Active', '1234567890123456', '123456', '789012'),
+-- (987654321, 2, '+9876543210', 'Inactive', '9876543210987654', '654321', '098765');
 
-INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES
-(1, 123456789, '2024-01-01', '2024-12-31', 'Auto'),
-(2, 987654321, '2024-02-01', '2024-11-30', 'Manual');
+-- INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES
+-- (1, 123456789, '2024-01-01', '2024-12-31', 'Auto'),
+-- (2, 987654321, '2024-02-01', '2024-11-30', 'Manual');
 
-INSERT INTO Support_Tickets (aid, issue_description, ticket_status, resolution_details) VALUES
-(1, 'Slow internet connection', 'Active', 'Technician dispatched'),
-(2, 'No network coverage', 'Inactive', 'N/A');
+-- INSERT INTO Support_Tickets (aid, issue_description, ticket_status, resolution_details) VALUES
+-- (1, 'Slow internet connection', 'Active', 'Technician dispatched'),
+-- (2, 'No network coverage', 'Inactive', 'N/A');
 
-INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title) VALUES
-('Alice Johnson', '+1122334455', '789 Oak St', 'POS', 'Customer Service Representative'),
-('Bob Smith', '+9988776655', '456 Pine St', 'Site', 'Technician'),
-('Charlie Brown', '+5544332211', '123 Maple St', 'Warehouse', 'Manager');
+-- INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title) VALUES
+-- ('Alice Johnson', '+1122334455', '789 Oak St', 'POS', 'Customer Service Representative'),
+-- ('Bob Smith', '+9988776655', '456 Pine St', 'Site', 'Technician'),
+-- ('Charlie Brown', '+5544332211', '123 Maple St', 'Warehouse', 'Manager'),
+-- ('David Mason', 'mason@gmail.com', '564 Mason St', 'POS', 'Manager'),
+-- ('Satan', 'the devil', '666 Devil St', 'Site', 'Manager');
 
-INSERT INTO Payments (aid, eid, sub_id, due_date, amount, payment_method, payment_date) VALUES
-(1, 1, 1, '2024-03-15', 19.99, 'Credit Card', '2024-03-15'),
-(2, 2, 2, '2024-03-20', 29.99, 'Cash', '2024-03-20');
+-- INSERT INTO Payments (aid, eid, sub_id, due_date, amount, payment_method, payment_date) VALUES
+-- (1, 1, 1, '2024-03-15', 19.99, 'Credit Card', '2024-03-15'),
+-- (2, 2, 2, '2024-03-20', 29.99, 'Cash', '2024-03-20');
 
-INSERT INTO Departments (eid, department_description, capacity, department_address, department_name) VALUES
-(1, 'Point of Sales', 100, '789 Oak St', 'POS'),
-(2, 'Network Site', 50, '456 Pine St', 'Site'),
-(3, 'Equipment Warehouse', 200, '123 Maple St', 'Warehouse');
+-- INSERT INTO Departments (eid, department_description, capacity, department_address, department_name) VALUES
+-- (3, 'Point of Sales', NULL, '789 Oak St', 'POS'),
+-- (4, 'Network Site', 50, '456 Pine St', 'Site'),
+-- (5, 'Equipment Warehouse', 200, '123 Maple St', 'Warehouse');
 
-INSERT INTO Equipment (equipment_name, model, department, equipment_status) VALUES
-('Modem', 'ABC123', 'POS', 'Active'),
-('Router', 'XYZ456', 'Site', 'Inactive'),
-('Antenna', '123ABC', 'Warehouse', 'Active');
+-- INSERT INTO Equipment (equipment_name, model, department, equipment_status) VALUES
+-- ('Modem', 'ABC123', 'POS', 'Active'),
+-- ('Router', 'XYZ456', 'Site', 'Inactive'),
+-- ('Antenna', '123ABC', 'Warehouse', 'Active');
+
+
+-- Sample Queries to Test the Telecom Database
+
+SELECT * FROM Customers;
+
+SELECT * FROM Accounts WHERE account_status = 'Active';
+
+SELECT * FROM Services WHERE price < 30;
+
+SELECT * FROM SIM_Cards WHERE sim_status = 'Active';
+
+SELECT * FROM Subscriptions WHERE renewal = 'Auto';
+
+SELECT * FROM Support_Tickets WHERE ticket_status = 'Active';
+
+SELECT * FROM Departments WHERE capacity > 100;
+
+SELECT service_name, price FROM Services;
+
+SELECT * FROM SIM_Cards;
+
+SELECT * FROM Subscriptions;
+
+SELECT * FROM Support_Tickets;
+
+SELECT * FROM Employees WHERE department = 'POS';
+
+SELECT * FROM Payments WHERE payment_method = 'Credit Card';
+
+SELECT department_name, capacity FROM Departments;
+
+SELECT * FROM Equipment WHERE equipment_status = 'Active';
+
+SELECT customer_name, contact_info
+FROM Customers
+WHERE cid IN (
+  SELECT cid
+  FROM Accounts
+  WHERE account_status = 'Active'
+);
+
+SELECT IMSI, ICCID
+FROM SIM_Cards
+WHERE sim_status = 'Inactive';
+
+SELECT Subscriptions.pid, Services.service_name, Subscriptions.starting_date, Subscriptions.ending_date, Subscriptions.renewal
+FROM Subscriptions
+INNER JOIN Services ON Subscriptions.pid = Services.pid
+WHERE Subscriptions.renewal = 'Auto';
+
+SELECT st.tid, st.issue_description, c.customer_name
+FROM Support_Tickets st
+INNER JOIN Accounts a ON st.aid = a.aid
+INNER JOIN Customers c ON a.cid = c.cid
+WHERE st.ticket_status = 'Active';
+
+SELECT employee_name, job_title
+FROM Employees
+WHERE department = 'Site';
+
+SELECT SUM(amount) AS total_collected
+FROM Payments
+WHERE payment_method = 'Credit Card';
+
+SELECT service_name, description
+FROM Services;
+
+SELECT Accounts.account_type, SUM(Payments.amount) AS total_paid
+FROM Accounts
+INNER JOIN Payments ON Accounts.aid = Payments.aid
+WHERE Accounts.account_status = 'Active'
+GROUP BY Accounts.account_type;
