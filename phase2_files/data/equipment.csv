@@ -1,0 +1,4 @@
+EquipmentName,Model,Department,Status
+Modem,ABC123,POS,Active
+Router,XYZ456,Site,Inactive
+Antenna,123ABC,Warehouse,Active

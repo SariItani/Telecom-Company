@@ -1,0 +1,3 @@
+AID,EID,SID,DueDate,Amount,PaymentMethod,PaymentDate
+1,1,1,2024-03-15,19.99,Credit Card,2024-03-15
+2,2,2,2024-03-20,29.99,Cash,2024-03-20
