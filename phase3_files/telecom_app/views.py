@@ -1,4 +1,5 @@
 from flask import render_template, request, redirect, url_for, session, flash
+import pandas as pd
 from telecom_app import app, mysql, cursor
 from flask_bcrypt import Bcrypt
 
@@ -104,15 +105,16 @@ def signup():
         if user_type == 'Customer':
             cursor.execute("INSERT INTO Customers (customer_name, contact_info, customer_address, password_hash) VALUES (%s, %s, %s, %s)",
                            (username, contact_info, address, hashed_password))
-        # elif user_type == 'Employee':
-        # somehow send a request
+        elif user_type == 'Employee':
+            df = pd.read_csv("./requests.csv")
+            df.add((username, contact_info, address, hashed_password))
+            flash("Wait for the application process now.")
 
         mysql.commit()
 
-        if user_type == 'Customer':
-            return redirect(url_for('login'))
-        elif user_type == 'Employee':
-            return f"I want to become an employee...\nMy name is: {username}\nMy contact info is: {contact_info}\nMy address is: {address}\nMy Password is:{password}\nMy hashed_password is:{hashed_password}"
+        if user_type == 'Employee':
+            print(f"I want to become an employee...\nMy name is: {username}\nMy contact info is: {contact_info}\nMy address is: {address}\nMy Password is:{password}\nMy hashed_password is:{hashed_password}")
+        return redirect(url_for('login'))
 
     return render_template('signup.html')
 
