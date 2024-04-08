@@ -4,18 +4,10 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt(app)
 
-# password hashing procedure:
-# hashed_root = bcrypt.generate_password_hash('root').decode('utf-8')
-# print(hashed_root)
-# print(bcrypt.check_password_hash(hashed_root, 'root'))
-# returns True, confirmed
-
 def initialize_root_user():
-    # Check if the root user exists
     cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
     root_user = cursor.fetchone()
     if not root_user:
-        # If root user does not exist, add them to the database
         hashed_password = bcrypt.generate_password_hash('root').decode('utf-8')
         cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
                        ('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager', hashed_password))
@@ -46,32 +38,57 @@ def login():
 @app.route('/sign-up', methods=['GET', 'POST'])
 def signup():
     if request.method == 'POST':
-        username = request.form['username']
-        type = request.form['type']
+        # Get Data
+        first_name = request.form['first_name']
+        last_name = request.form['last_name']
+        address = request.form['address']
         email = request.form['email']
         password = request.form['password']
+        confirm_password = request.form['confirm-password']
+        phone = request.form['phone']
+        user_type = request.form['subject']
+
+        # Check Password
+        if password != confirm_password:
+            flash('Passwords do not match. Please try again.', 'error')
+            return redirect(url_for('signup'))
+
+        # Format stuff for the database
+        username = f"{first_name} {last_name}"
         
+        if email and phone:
+            contact_info = f"Email:{email}, Phone Nb:{phone}"
+        elif email:
+            contact_info = f"Email:{email}"
+        else:
+            contact_info = f"Phone Nb:{phone}"
+            
         hashed_password = bcrypt.generate_password_hash(password).decode('utf-8')
-        
-        if type == 'Customer':
+
+        # Check if existing user
+        if user_type == 'Customer':
             cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (username,))
-        elif type == 'Employee':
+        elif user_type == 'Employee':
             cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (username,))
-
         existing_user = cursor.fetchone()
-
         if existing_user:
             flash('User already exists. Please choose a different username.', 'error')
             return redirect(url_for('signup'))
 
-        if type == 'Customer':
-            cursor.execute("INSERT INTO Customers (customer_name, contact_info, customer_address) VALUES (%s, %s, %s)",
-                        (username, email, ''))
-        elif type == 'Employee':
-            cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title) VALUES (%s, %s, %s, %s, %s)",
-                        (username, '', '', 'POS', 'Customer Service Representative'))
+        # Create user for customer or send request for employee
+        if user_type == 'Customer':
+            cursor.execute("INSERT INTO Customers (customer_name, contact_info, customer_address, password_hash) VALUES (%s, %s, %s, %s)",
+                           (username, contact_info, address, hashed_password))
+        # elif user_type == 'Employee':
+        # somehow send a request
+
         mysql.commit()
-        return redirect(url_for('login'))
+
+        if user_type == 'Customer':
+            return redirect(url_for('login'))
+        elif user_type == 'Employee':
+            return f"I want to become an employee...\nMy name is: {username}\nMy contact info is: {contact_info}\nMy address is: {address}\n"
+
     return render_template('signup.html')
 
 @app.route('/employees', methods=['GET', 'POST'])
