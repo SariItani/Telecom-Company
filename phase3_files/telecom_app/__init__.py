@@ -17,11 +17,4 @@ mysql = mysql.connector.connect(
 
 cursor = mysql.cursor()
 
-# testing connection
-cursor.execute("SELECT * FROM Customers")
-rows = cursor.fetchall()
-for row in rows:
-    print(row)
-
-cursor.close()
-mysql.close()
+from telecom_app import views
