@@ -111,6 +111,12 @@ CREATE TABLE IF NOT EXISTS Equipment (
   PRIMARY KEY (eqid)
 );
 
+ALTER TABLE Customers
+ADD COLUMN password_hash VARCHAR(255) NOT NULL;
+
+ALTER TABLE Employees
+ADD COLUMN password_hash VARCHAR(255) NOT NULL;
+
 
 -- -- sample testing data
 
