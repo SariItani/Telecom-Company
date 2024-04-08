@@ -44,7 +44,6 @@ def login():
             cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (username,))
 
         user = cursor.fetchone()
-        # hashed_password = user.get('password_hash')
         print(user)
         
         if user:
