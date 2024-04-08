@@ -15,7 +15,7 @@ def initialize_root_user():
         print("Root user added successfully.")
     else:
         print("Root user already exists.")
-        
+
 initialize_root_user()
 
 # CREATE TABLE IF NOT EXISTS Employees (
@@ -27,9 +27,7 @@ initialize_root_user()
 
 @app.route('/')
 def index():
-    cursor.execute("SELECT * FROM Customers")
-    customers = cursor.fetchall()
-    return render_template('index-employees.html', customers=customers)
+    return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -58,9 +56,8 @@ def login():
                 return redirect(url_for('login'))
         else:
             flash('User not found. Please sign up.', 'error')
-            return redirect(url_for('signup'))
+            return redirect(url_for('login'))
     return render_template('login.html')
-
 
 @app.route('/sign-up', methods=['GET', 'POST'])
 def signup():
@@ -120,40 +117,31 @@ def signup():
 
 @app.route('/employees', methods=['GET', 'POST'])
 def employee_portal():
-    # Check if user is logged in
     if 'username' in session:
-        # Fetch employee-specific data from the database
         cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (session['username'],))
         employee = cursor.fetchone()
         if employee:
-            # Render the employee portal base template and pass employee data
             return render_template('index-employees.html', employee=employee)
         else:
-            # If the employee is not found, log them out
             session.pop('username', None)
-            return redirect(url_for('login'))  # Redirect to login page
+            return redirect(url_for('login'))
     else:
-        # If user is not logged in, redirect to login page
-        return redirect(url_for('login'))  # Redirect to login page
-    
+        return redirect(url_for('login'))
+
 @app.route('/customers', methods=['GET', 'POST'])
 def customer_portal():
-    # Check if user is logged in
     if 'username' in session:
-        # Fetch customer-specific data from the database
         cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
         customer = cursor.fetchone()
         if customer:
-            # Render the customer portal base template and pass customer data
             return render_template('index-customers.html', customer=customer)
         else:
-            # If the customer is not found, log them out
             session.pop('username', None)
-            return redirect(url_for('login'))  # Redirect to login page
+            return redirect(url_for('login'))
     else:
-        # If user is not logged in, redirect to login page
-        return redirect(url_for('login'))  # Redirect to login page
-    
+        return redirect(url_for('login'))
+
 @app.route('/logout')
 def logout():
+    session.clear()
     return redirect(url_for('login'))
