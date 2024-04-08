@@ -4,12 +4,17 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt(app)
 
+# password hashing procedure:
+# hashed_root = bcrypt.generate_password_hash('root').decode('utf-8')
+# print(hashed_root)
+# print(bcrypt.check_password_hash(hashed_root, 'root'))
+# returns True, confirmed
 
 @app.route('/')
 def index():
     cursor.execute("SELECT * FROM Customers")
     customers = cursor.fetchall()
-    return render_template('index.html', customers=customers)
+    return render_template('index-employees.html', customers=customers)
 
 @app.route('/login')
 def login():
@@ -44,7 +49,7 @@ def signup():
                         (username, '', '', 'POS', 'Customer Service Representative'))
         mysql.commit()
         return redirect(url_for('login'))
-    return render_template('sign-up.html')
+    return render_template('signup.html')
 
 @app.route('/employees', methods=['GET', 'POST'])
 def employee_portal():
@@ -63,3 +68,7 @@ def employee_portal():
     else:
         # If user is not logged in, redirect to login page
         return redirect(url_for('login'))  # Redirect to login page
+    
+@app.route('/logout')
+def logout():
+    return redirect(url_for('login'))

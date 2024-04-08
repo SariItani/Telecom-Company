@@ -10,28 +10,34 @@
     <meta name="keywords" content="Colorlib Templates">
 
     <!-- Title Page-->
-    <title>Au Register Forms by Colorlib</title>
+    <title>Sign-up</title>
 
     <!-- Icons font CSS-->
-    <link href="vendor/mdi-font/css/material-design-iconic-font.min.css" rel="stylesheet" media="all">
-    <link href="vendor/font-awesome-4.7/css/font-awesome.min.css" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/mdi-font/css/material-design-iconic-font.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/font-awesome-4.7/css/font-awesome.min.css') }}" rel="stylesheet" media="all">
     <!-- Font special for pages-->
     <link href="https://fonts.googleapis.com/css?family=Open+Sans:300,300i,400,400i,600,600i,700,700i,800,800i" rel="stylesheet">
 
     <!-- Vendor CSS-->
-    <link href="vendor/select2/select2.min.css" rel="stylesheet" media="all">
-    <link href="vendor/datepicker/daterangepicker.css" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/select2/select2.min.css') }}" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='vendor/datepicker/daterangepicker.css') }}" rel="stylesheet" media="all">
 
     <!-- Main CSS-->
-    <link href="css/main.css" rel="stylesheet" media="all">
+    <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" media="all">
 </head>
 
 <body>
-    <div class="page-wrapper bg-gra-03 p-t-45 p-b-50">
+    <div class="page-wrapper bg-gra-03 p-t-45 p-b-50" style="background-image: url(../static/assets/bg.jpg); background-repeat:round;">
         <div class="wrapper wrapper--w790">
             <div class="card card-5">
                 <div class="card-heading">
-                    <h2 class="title">Event Registration Form</h2>
+                    <h2 class="title">User Registration Form</h2>
+                    <!-- CREATE TABLE IF NOT EXISTS Employees (
+                        we will take care of those by creating an HR manager hardcoded into the database
+                        department ENUM('POS', 'Site', 'Warehouse'),
+                        job_title VARCHAR(50) NOT NULL,
+                        PRIMARY KEY (eid)
+                        ); -->
                 </div>
                 <div class="card-body">
                     <form method="POST">
@@ -55,10 +61,18 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="name">Company</div>
+                            <div class="name">Contact Into</div>
                             <div class="value">
                                 <div class="input-group">
-                                    <input class="input--style-5" type="text" name="company">
+                                    <input class="input--style-5" type="text" name="info">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="name">Address</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    <input class="input--style-5" type="text" name="address">
                                 </div>
                             </div>
                         </div>
@@ -67,6 +81,22 @@
                             <div class="value">
                                 <div class="input-group">
                                     <input class="input--style-5" type="email" name="email">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="name">Password</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    <input class="input--style-5" type="password" name="password">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-row">
+                            <div class="name">Confirm Password</div>
+                            <div class="value">
+                                <div class="input-group">
+                                    <input class="input--style-5" type="password" name="confirm-password">
                                 </div>
                             </div>
                         </div>
@@ -90,15 +120,14 @@
                             </div>
                         </div>
                         <div class="form-row">
-                            <div class="name">Subject</div>
+                            <div class="name">Type</div>
                             <div class="value">
                                 <div class="input-group">
                                     <div class="rs-select2 js-select-simple select--no-search">
                                         <select name="subject">
-                                            <option disabled="disabled" selected="selected">Choose option</option>
-                                            <option>Subject 1</option>
-                                            <option>Subject 2</option>
-                                            <option>Subject 3</option>
+                                            <option disabled="disabled" selected="selected">Choose Type</option>
+                                            <option>Employee</option>
+                                            <option>Customer</option>
                                         </select>
                                         <div class="select-dropdown"></div>
                                     </div>
@@ -128,14 +157,14 @@
     </div>
 
     <!-- Jquery JS-->
-    <script src="vendor/jquery/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='vendor/jquery/jquery.min.js') }}"></script>
     <!-- Vendor JS-->
-    <script src="vendor/select2/select2.min.js"></script>
-    <script src="vendor/datepicker/moment.min.js"></script>
-    <script src="vendor/datepicker/daterangepicker.js"></script>
+    <script src="{{ url_for('static', filename='vendor/select2/select2.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/datepicker/moment.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='vendor/datepicker/daterangepicker.js') }}"></script>
 
     <!-- Main JS-->
-    <script src="js/global.js"></script>
+    <script src="{{ url_for('static', filename='js/global.js') }}"></script>
 
 </body><!-- This templates was made by Colorlib (https://colorlib.com) -->
 

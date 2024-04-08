@@ -145,8 +145,8 @@ ADD COLUMN password_hash VARCHAR(255) NOT NULL;
 -- (1, 'Slow internet connection', 'Active', 'Technician dispatched'),
 -- (2, 'No network coverage', 'Inactive', 'N/A');
 
--- INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title) VALUES
--- ('Alice Johnson', '+1122334455', '789 Oak St', 'POS', 'Customer Service Representative'),
+INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title) VALUES
+('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager'),
 -- ('Bob Smith', '+9988776655', '456 Pine St', 'Site', 'Technician'),
 -- ('Charlie Brown', '+5544332211', '123 Maple St', 'Warehouse', 'Manager'),
 -- ('David Mason', 'mason@gmail.com', '564 Mason St', 'POS', 'Manager'),
