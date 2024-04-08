@@ -10,6 +10,29 @@ bcrypt = Bcrypt(app)
 # print(bcrypt.check_password_hash(hashed_root, 'root'))
 # returns True, confirmed
 
+def initialize_root_user():
+    # Check if the root user exists
+    cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
+    root_user = cursor.fetchone()
+    if not root_user:
+        # If root user does not exist, add them to the database
+        hashed_password = bcrypt.generate_password_hash('root').decode('utf-8')
+        cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
+                       ('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager', hashed_password))
+        mysql.commit()
+        print("Root user added successfully.")
+    else:
+        print("Root user already exists.")
+        
+initialize_root_user()
+
+# CREATE TABLE IF NOT EXISTS Employees (
+#     we will take care of those by creating an HR manager hardcoded into the database
+#     department ENUM('POS', 'Site', 'Warehouse'),
+#     job_title VARCHAR(50) NOT NULL,
+#     PRIMARY KEY (eid)
+# ); 
+
 @app.route('/')
 def index():
     cursor.execute("SELECT * FROM Customers")

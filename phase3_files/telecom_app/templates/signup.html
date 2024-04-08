@@ -11,6 +11,8 @@
 
     <!-- Title Page-->
     <title>Sign-up</title>
+    <!-- Coutry Codes -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/css/intlTelInput.min.css">
 
     <!-- Icons font CSS-->
     <link href="{{ url_for('static', filename='vendor/mdi-font/css/material-design-iconic-font.min.css') }}" rel="stylesheet" media="all">
@@ -24,20 +26,23 @@
 
     <!-- Main CSS-->
     <link href="{{ url_for('static', filename='css/main.css') }}" rel="stylesheet" media="all">
+
+    <link
+        rel="icon"
+        type="image/x-icon"
+        href="{{ url_for('static', filename='assets/cleo.jpg') }}"
+    />
 </head>
 
 <body>
     <div class="page-wrapper bg-gra-03 p-t-45 p-b-50" style="background-image: url(../static/assets/bg.jpg); background-repeat:round;">
         <div class="wrapper wrapper--w790">
+            <div style="display: flex; justify-content: center;">
+                <img class="mb-4" src="{{ url_for('static', filename='assets/Cleo.png') }}" alt="Oh No" width="35%" height="35%" />
+            </div>
             <div class="card card-5">
                 <div class="card-heading">
                     <h2 class="title">User Registration Form</h2>
-                    <!-- CREATE TABLE IF NOT EXISTS Employees (
-                        we will take care of those by creating an HR manager hardcoded into the database
-                        department ENUM('POS', 'Site', 'Warehouse'),
-                        job_title VARCHAR(50) NOT NULL,
-                        PRIMARY KEY (eid)
-                        ); -->
                 </div>
                 <div class="card-body">
                     <form method="POST">
@@ -106,14 +111,13 @@
                                 <div class="row row-refine">
                                     <div class="col-3">
                                         <div class="input-group-desc">
-                                            <input class="input--style-5" type="text" name="area_code">
-                                            <label class="label--desc">Area Code</label>
+                                            <div id="area_code_container"></div>
+                                            <label class="label--desc">Choose Your Area Code</label>
                                         </div>
                                     </div>
-                                    <div class="col-9">
+                                    <div class="col-12">
                                         <div class="input-group-desc">
-                                            <input class="input--style-5" type="text" name="phone">
-                                            <label class="label--desc">Phone Number</label>
+                                            <input type="tel" class="input--style-5" id="phone" name="phone">
                                         </div>
                                     </div>
                                 </div>
@@ -134,24 +138,19 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="form-row p-t-20">
-                            <label class="label label--block">Are you an existing customer?</label>
-                            <div class="p-t-15">
-                                <label class="radio-container m-r-55">Yes
-                                    <input type="radio" checked="checked" name="exist">
-                                    <span class="checkmark"></span>
-                                </label>
-                                <label class="radio-container">No
-                                    <input type="radio" name="exist">
-                                    <span class="checkmark"></span>
-                                </label>
-                            </div>
-                        </div>
                         <div>
                             <button class="btn btn--radius-2 btn--red" type="submit">Register</button>
                         </div>
                     </form>
                 </div>
+            </div>
+            <div style="display: flex; align-items: center;">
+                {% block login_foot %}
+                <div>
+                    <a href="/login"><p>Already Have an account? Login!</p></a>
+                </div>
+                {% endblock %}
+                <p class="mt-5 mb-3 text-muted">&copy; Website Chatbot 2024</p>
             </div>
         </div>
     </div>
@@ -166,7 +165,23 @@
     <!-- Main JS-->
     <script src="{{ url_for('static', filename='js/global.js') }}"></script>
 
-</body><!-- This templates was made by Colorlib (https://colorlib.com) -->
+    <!-- Coutry Codes -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/intlTelInput.min.js"></script>
+    <script>
+        var input = document.querySelector("#phone");
+        var areaCodeContainer = document.querySelector("#area_code_container");
+        window.intlTelInput(input, {
+            initialCountry: "auto",
+            separateDialCode: true,
+            preferredCountries: ["us", "gb", "ca", "au"],
+            utilsScript: "https://cdnjs.cloudflare.com/ajax/libs/intl-tel-input/17.0.8/js/utils.js"
+        }).getNumber(function (e) {
+            var countryCodeInput = document.createElement("input");
+            countryCodeInput.type = "hidden";
+            countryCodeInput.name = "country_code";
+            countryCodeInput.value = "+" + e.countryCallingCode;
+            areaCodeContainer.appendChild(countryCodeInput);
+        });
+    </script>
 
 </html>
-<!-- end document-->
