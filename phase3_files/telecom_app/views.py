@@ -31,7 +31,7 @@ def index():
     customers = cursor.fetchall()
     return render_template('index-employees.html', customers=customers)
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login():
     return render_template('login.html')
 
@@ -87,7 +87,7 @@ def signup():
         if user_type == 'Customer':
             return redirect(url_for('login'))
         elif user_type == 'Employee':
-            return f"I want to become an employee...\nMy name is: {username}\nMy contact info is: {contact_info}\nMy address is: {address}\n"
+            return f"I want to become an employee...\nMy name is: {username}\nMy contact info is: {contact_info}\nMy address is: {address}\nMy Password is:{password}\nMy hashed_password is:{hashed_password}"
 
     return render_template('signup.html')
 
