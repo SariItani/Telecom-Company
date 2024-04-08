@@ -33,7 +33,33 @@ def index():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
+        user_type = request.form.get('type')
+
+        if user_type == 'Customer':
+            cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (username,))
+        elif user_type == 'Employee':
+            cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (username,))
+
+        user = cursor.fetchone()
+        # hashed_password = user.get('password_hash')
+        print(user)
+        
+        if user:
+            hashed_password = user[-1]
+            if bcrypt.check_password_hash(hashed_password, password):
+                session['username'] = username
+                return redirect(url_for('employee_portal'))
+            else:
+                flash('Incorrect password. Please try again.', 'error')
+                return redirect(url_for('login'))
+        else:
+            flash('User not found. Please sign up.', 'error')
+            return redirect(url_for('signup'))
     return render_template('login.html')
+
 
 @app.route('/sign-up', methods=['GET', 'POST'])
 def signup():
@@ -96,7 +122,7 @@ def employee_portal():
     # Check if user is logged in
     if 'username' in session:
         # Fetch employee-specific data from the database
-        cursor.execute("SELECT * FROM Employees WHERE username = %s", (session['username'],))
+        cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (session['username'],))
         employee = cursor.fetchone()
         if employee:
             # Render the employee portal base template and pass employee data

@@ -3,6 +3,8 @@ import mysql.connector
 
 app = Flask(__name__)
 
+app.secret_key = 'HELLO YOUR GAMBAYOUTAR HAS VIRUS'
+
 app.config['MYSQL_HOST'] = 'localhost'
 app.config['MYSQL_USER'] = 'sari'
 app.config['MYSQL_PASSWORD'] = 'Sari@Itani101'
