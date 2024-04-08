@@ -27,6 +27,7 @@ initialize_root_user()
 
 @app.route('/')
 def index():
+    session.clear()
     return redirect(url_for('login'))
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -121,7 +122,7 @@ def employee_portal():
         cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (session['username'],))
         employee = cursor.fetchone()
         if employee:
-            return render_template('index-employees.html', employee=employee)
+            return render_template('index-employees.html', employee=employee, username=employee[1])
         else:
             session.pop('username', None)
             return redirect(url_for('login'))
@@ -134,7 +135,7 @@ def customer_portal():
         cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
         customer = cursor.fetchone()
         if customer:
-            return render_template('index-customers.html', customer=customer)
+            return render_template('index-customers.html', customer=customer, username=customer[1])
         else:
             session.pop('username', None)
             return redirect(url_for('login'))
