@@ -44,13 +44,15 @@ def login():
             cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (username,))
 
         user = cursor.fetchone()
-        print(user)
         
         if user:
             hashed_password = user[-1]
             if bcrypt.check_password_hash(hashed_password, password):
                 session['username'] = username
-                return redirect(url_for('employee_portal'))
+                if user_type == 'Employee':
+                    return redirect(url_for('employee_portal'))
+                elif user_type == 'Customer':
+                    return redirect(url_for('customer_portal'))
             else:
                 flash('Incorrect password. Please try again.', 'error')
                 return redirect(url_for('login'))
@@ -128,6 +130,24 @@ def employee_portal():
             return render_template('index-employees.html', employee=employee)
         else:
             # If the employee is not found, log them out
+            session.pop('username', None)
+            return redirect(url_for('login'))  # Redirect to login page
+    else:
+        # If user is not logged in, redirect to login page
+        return redirect(url_for('login'))  # Redirect to login page
+    
+@app.route('/customers', methods=['GET', 'POST'])
+def customer_portal():
+    # Check if user is logged in
+    if 'username' in session:
+        # Fetch customer-specific data from the database
+        cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
+        customer = cursor.fetchone()
+        if customer:
+            # Render the customer portal base template and pass customer data
+            return render_template('index-customers.html', customer=customer)
+        else:
+            # If the customer is not found, log them out
             session.pop('username', None)
             return redirect(url_for('login'))  # Redirect to login page
     else:
