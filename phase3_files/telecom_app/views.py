@@ -8,57 +8,85 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt(app)
 
-# def initialize_root_user():
-#     cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
-#     root_user = cursor.fetchone()
-#     if not root_user:
-#         hashed_password = bcrypt.generate_password_hash('root').decode('utf-8')
-#         cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
-#                        ('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager', hashed_password))
-#         mysql.commit()
-#         print("Root user added successfully.")
-#     else:
-#         print("Root user already exists.")
+def initialize_root_user():
+    cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
+    root_user = cursor.fetchone()
+    if not root_user:
+        hashed_password = bcrypt.generate_password_hash('root').decode('utf-8')
+        cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
+                       ('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager', hashed_password))
+        mysql.commit()
+        print("Root user added successfully.")
+    else:
+        print("Root user already exists.")
 
-# initialize_root_user()
+initialize_root_user()
 
-# def insert_sim_card(IMSI, phone_number, ICCID, PUK, PIN):
-#         sql = "INSERT INTO SIM_Cards (IMSI, phone_number, sim_status, ICCID, PUK, PIN) VALUES (%s, %s, %s, %s, %s, %s)"
-#         sim_card_data = (IMSI, phone_number, 'Inactive', ICCID, PUK, PIN)
+def insert_sim_card(IMSI, phone_number, ICCID, PUK, PIN):
+        sql = "INSERT INTO SIM_Cards (IMSI, phone_number, sim_status, ICCID, PUK, PIN) VALUES (%s, %s, %s, %s, %s, %s)"
+        sim_card_data = (IMSI, phone_number, 'Inactive', ICCID, PUK, PIN)
 
-#         cursor.execute(sql, sim_card_data)
-#         mysql.commit()
-#         print(f"SIM card inserted successfully:\n{IMSI}\n{phone_number}\n{ICCID}\n{PUK}\nP{PIN}")
+        cursor.execute(sql, sim_card_data)
+        mysql.commit()
+        print(f"SIM card inserted successfully:\n{IMSI}\n{phone_number}\n{ICCID}\n{PUK}\nP{PIN}")
 
-# def generate_unique_value(existing_values, length=10):
-#     while True:
-#         value = ''.join(random.choices(string.digits, k=length))
-#         if value not in existing_values:
-#             existing_values.add(value)
-#             return value
+def generate_unique_value(existing_values, length=10):
+    while True:
+        value = ''.join(random.choices(string.digits, k=length))
+        if value not in existing_values:
+            existing_values.add(value)
+            return value
 
-# def generate_sim_card_data(existing_values):
-#     # Generate unique IMSI
-#     imsi = generate_unique_value(existing_values)
+def generate_sim_card_data(existing_values):
+    # Generate unique IMSI
+    imsi = generate_unique_value(existing_values)
 
-#     # Generate random phone number (for example)
-#     phone_number = ''.join(random.choices(string.digits, k=10))
+    # Generate random phone number (for example)
+    phone_number = ''.join(random.choices(string.digits, k=10))
 
-#     # Generate unique ICCID, PUK, and PIN
-#     iccid = generate_unique_value(existing_values)
-#     puk = generate_unique_value(existing_values)
-#     pin = generate_unique_value(existing_values)
+    # Generate unique ICCID, PUK, and PIN
+    iccid = generate_unique_value(existing_values)
+    puk = generate_unique_value(existing_values)
+    pin = generate_unique_value(existing_values)
 
-#     return imsi, phone_number, iccid, puk, pin
+    return imsi, phone_number, iccid, puk, pin
 
-# def insert_sim_cards(num_sim_cards):
-#     existing_values = set()
-#     for _ in range(num_sim_cards):
-#         imsi, phone_number, iccid, puk, pin = generate_sim_card_data(existing_values)
-#         insert_sim_card(imsi, phone_number, iccid, puk, pin)
+def insert_sim_cards(num_sim_cards):
+    existing_values = set()
+    for _ in range(num_sim_cards):
+        imsi, phone_number, iccid, puk, pin = generate_sim_card_data(existing_values)
+        insert_sim_card(imsi, phone_number, iccid, puk, pin)
 
-# # Insert 1000 SIM cards
-# insert_sim_cards(1000)
+# Insert 20 SIM cards each time the website reloads
+insert_sim_cards(20)
+
+def populate_services_table():
+    bundles = [
+        {"service_name": "Recharge Card $7", "description": "Recharge card bundle - $7", "price": 7.00},
+        {"service_name": "Recharge Card $15", "description": "Recharge card bundle - $15", "price": 15.00},
+        {"service_name": "Recharge Card $30", "description": "Recharge card bundle - $30", "price": 30.00},
+        {"service_name": "Recharge Card $50", "description": "Recharge card bundle - $50", "price": 50.00},
+        {"service_name": "Recharge Card $75", "description": "Recharge card bundle - $75", "price": 75.00},
+        {"service_name": "Recharge Card $100", "description": "Recharge card bundle - $100", "price": 100.00},
+        {"service_name": "Recharge Card $150", "description": "Recharge card bundle - $150", "price": 150.00},
+        {"service_name": "Standard Bundle", "description": "Monthly service charge", "price": 5.00}
+    ]
+
+    cursor.execute("SELECT * FROM Services")
+    existing_services = cursor.fetchall()
+    if existing_services:
+        print("Services table already populated.")
+        return
+
+    for bundle in bundles:
+        sql = "INSERT INTO Services (service_name, description, price) VALUES (%s, %s, %s)"
+        values = (bundle["service_name"], bundle["description"], bundle["price"])
+        cursor.execute(sql, values)
+
+    mysql.commit()
+    print("Services table populated successfully.")
+
+populate_services_table()
 
 @app.route('/')
 def index():
@@ -244,8 +272,12 @@ def handle_request():
                     if row[0] == request_index:
                         account_data = row
                         break
-            cursor.execute("INSERT INTO Accounts (cid, account_type, account_status) VALUES (%s, %s, %s)",
-                           (account_data[0], account_data[-1], "Active"))
+            if account_data[-1] == 'Individual':
+                balance = 7.00
+            elif account_data[-1] == 'Business':
+                balance = 30.00
+            cursor.execute("INSERT INTO Accounts (cid, balance, account_type, account_status) VALUES (%s, %s, %s, %s)",
+                           (account_data[0], balance, account_data[-1], "Active"))
             cursor.execute("SELECT LAST_INSERT_ID()")
             aid = cursor.fetchone()[0]
             mysql.commit()

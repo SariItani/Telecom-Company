@@ -15,6 +15,7 @@ CREATE TABLE IF NOT EXISTS Customers (
 CREATE TABLE IF NOT EXISTS Accounts (
   aid INT NOT NULL AUTO_INCREMENT,
   cid INT NOT NULL,
+  balance DECIMAL(10,2),
   account_type ENUM('Individual','Business'),
   account_status ENUM('Active','Inactive'),
   PRIMARY KEY (aid),
