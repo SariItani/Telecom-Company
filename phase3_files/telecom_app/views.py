@@ -1,7 +1,7 @@
 import csv
 import random
+import string
 from flask import render_template, request, redirect, url_for, session, flash
-import pandas as pd
 from telecom_app import app, mysql, cursor
 from flask_bcrypt import Bcrypt
 
@@ -20,6 +20,44 @@ def initialize_root_user():
         print("Root user already exists.")
 
 initialize_root_user()
+
+# def insert_sim_card(IMSI, phone_number, ICCID, PUK, PIN):
+#         sql = "INSERT INTO SIM_Cards (IMSI, phone_number, sim_status, ICCID, PUK, PIN) VALUES (%s, %s, %s, %s, %s, %s)"
+#         sim_card_data = (IMSI, phone_number, 'Inactive', ICCID, PUK, PIN)
+
+#         cursor.execute(sql, sim_card_data)
+#         mysql.commit()
+#         print(f"SIM card inserted successfully:\n{IMSI}\n{phone_number}\n{ICCID}\n{PUK}\nP{PIN}")
+
+# def generate_unique_value(existing_values, length=10):
+#     while True:
+#         value = ''.join(random.choices(string.digits, k=length))
+#         if value not in existing_values:
+#             existing_values.add(value)
+#             return value
+
+# def generate_sim_card_data(existing_values):
+#     # Generate unique IMSI
+#     imsi = generate_unique_value(existing_values)
+
+#     # Generate random phone number (for example)
+#     phone_number = ''.join(random.choices(string.digits, k=10))
+
+#     # Generate unique ICCID, PUK, and PIN
+#     iccid = generate_unique_value(existing_values)
+#     puk = generate_unique_value(existing_values)
+#     pin = generate_unique_value(existing_values)
+
+#     return imsi, phone_number, iccid, puk, pin
+
+# def insert_sim_cards(num_sim_cards):
+#     existing_values = set()
+#     for _ in range(num_sim_cards):
+#         imsi, phone_number, iccid, puk, pin = generate_sim_card_data(existing_values)
+#         insert_sim_card(imsi, phone_number, iccid, puk, pin)
+
+# # Insert 1000 SIM cards
+# insert_sim_cards(1000)
 
 @app.route('/')
 def index():
@@ -244,7 +282,6 @@ def customers_query():
         cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (session['username'],))
         employee = cursor.fetchone()
         if employee:
-            # Query to retrieve customer information along with associated account and SIM card details
             sql = """
                 SELECT c.cid AS CustomerID, c.customer_name AS CustomerName, c.contact_info AS ContactInfo, c.customer_address AS Address,
                         a.aid AS AccountID, a.account_type AS AccountType, a.account_status AS AccountStatus,
