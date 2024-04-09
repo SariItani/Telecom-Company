@@ -1,5 +1,5 @@
 import csv
-from datetime import datetime
+from datetime import datetime, timedelta
 import random
 import string
 from flask import render_template, request, redirect, url_for, session, flash
@@ -276,10 +276,12 @@ def handle_request():
                 balance = 7.00
             elif account_data[-1] == 'Business':
                 balance = 30.00
+            
             cursor.execute("INSERT INTO Accounts (cid, balance, account_type, account_status) VALUES (%s, %s, %s, %s)",
-                           (account_data[0], balance, account_data[-1], "Active"))
+                        (account_data[0], balance, account_data[-1], "Active"))
             cursor.execute("SELECT LAST_INSERT_ID()")
             aid = cursor.fetchone()[0]
+            
             mysql.commit()
             
             with open('telecom_app/account_requests.csv', 'r') as file:
@@ -288,7 +290,7 @@ def handle_request():
                 for line in lines:
                     if request_index not in line:
                         file.write(line)
-                        
+            
             cursor.execute("SELECT eid FROM Employees WHERE employee_name = %s", (session['username'],))
             eid = cursor.fetchone()[0]
 
@@ -296,17 +298,34 @@ def handle_request():
             inactive_sim_cards = cursor.fetchall()
             if inactive_sim_cards:
                 random_inactive_sim = random.choice(inactive_sim_cards)[0]
+                
                 cursor.execute("UPDATE SIM_Cards SET aid = %s, sim_status = 'Active' WHERE IMSI = %s",
                             (aid, random_inactive_sim))
+                
                 if account_data[-1] == 'Individual':
                     amount = 5.67
                 elif account_data[-1] == 'Business':
                     amount = 21.67
+                
                 cursor.execute("INSERT INTO Payments (aid, eid, amount, payment_method, due_date, payment_date) VALUES (%s, %s, %s, %s, %s, %s)",
-                       (aid, eid, amount, account_data[4], datetime.now(), datetime.now()))
+                            (aid, eid, amount, account_data[4], datetime.now(), datetime.now()))
+
                 mysql.commit()
+                
+                cursor.execute("SELECT pid FROM Services WHERE service_name = 'Standard Bundle'")
+                service_id = cursor.fetchone()[0]
+                
+                today = datetime.now()
+                ending_date = today + timedelta(days=30)
+
+                cursor.execute("INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES (%s, %s, %s, %s, 'Auto')",
+                            (service_id, random_inactive_sim, today, ending_date))
+                
+                mysql.commit()
+
             flash('Account created successfully', 'success')
             return redirect(url_for('requests', request_type='customer_accounts'))
+
         
         elif request.form.get('reject-account'):
             request_index = request.form.get('account_index')
