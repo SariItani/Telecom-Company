@@ -1,3 +1,4 @@
+import csv
 from flask import render_template, request, redirect, url_for, session, flash
 import pandas as pd
 from telecom_app import app, mysql, cursor
@@ -106,8 +107,9 @@ def signup():
             cursor.execute("INSERT INTO Customers (customer_name, contact_info, customer_address, password_hash) VALUES (%s, %s, %s, %s)",
                            (username, contact_info, address, hashed_password))
         elif user_type == 'Employee':
-            df = pd.read_csv("./requests.csv")
-            df.add((username, contact_info, address, hashed_password))
+            with open('telecom_app/requests.csv', "a", newline="") as file:
+                writer = csv.writer(file)
+                writer.writerow((username, contact_info, address, hashed_password))
             flash("Wait for the application process now.")
 
         mysql.commit()
@@ -130,6 +132,75 @@ def employee_portal():
             return redirect(url_for('login'))
     else:
         return redirect(url_for('login'))
+    
+@app.route('/employees/requests', methods=['GET', 'POST'])
+def requests():
+    if 'username' in session:
+        cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (session['username'],))
+        employee = cursor.fetchone()
+        if employee[-2] != 'Manager':
+            flash("You are not a Manager! Get a manager to do it instead.", 'error')
+            session.clear()
+            return redirect(url_for('login'))
+        if employee:
+            with open('telecom_app/requests.csv', 'r', newline="") as file:
+                csv_reader = csv.reader(file)
+                requests = list(csv_reader)
+                print(requests)
+            return render_template('requests.html', requests=requests)
+        else:
+            session.pop('username', None)
+            return redirect(url_for('login'))
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/handle-request', methods=['POST'])
+def handle_request():
+    if request.method == 'POST':
+        print(request.form)
+        if request.form.get('accept'):
+            request_index = request.form.get('request_index')
+            job_title = request.form.get('job')
+            department = request.form.get('department')
+            
+            username = request_index
+            with open('telecom_app/requests.csv', 'r') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if row[0] == request_index:
+                        employee = row
+                        break
+            contact_info = employee[1]
+            address = employee[2]
+            hashed_password = employee[3]
+            
+            cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
+                        (username, contact_info, address, department, job_title, hashed_password))
+            mysql.commit()
+            
+            flash('Employee created successfully', 'success')
+            with open('telecom_app/requests.csv', 'r') as file:
+                lines = file.readlines()
+            with open('telecom_app/requests.csv', 'w') as file:
+                for line in lines:
+                    if request_index not in line:
+                        file.write(line)
+
+            return redirect(url_for('requests'))
+
+        elif request.form.get('reject'):
+            request_index = request.form.get('request_index')
+            flash('Employee Rejected and will never bother us again', 'error')
+            with open('telecom_app/requests.csv', 'r') as file:
+                lines = file.readlines()
+            with open('telecom_app/requests.csv', 'w') as file:
+                for line in lines:
+                    if request_index not in line:
+                        file.write(line)
+            return redirect(url_for('requests'))
+    else:
+        flash('Invalid request method', 'error')
+        return redirect(url_for('requests'))
 
 @app.route('/customers', methods=['GET', 'POST'])
 def customer_portal():

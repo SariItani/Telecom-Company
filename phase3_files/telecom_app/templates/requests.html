@@ -1,0 +1,47 @@
+{% extends 'index-employees.html' %}
+{% block content %}
+<section style="background-color: rgb(225, 235, 243)" class="masthead text-center" id="portfolio">
+    <div class="container d-flex align-items-center flex-column">
+        <h1 class="mb-4">Employee Requests</h1>
+        <div class="table-responsive">
+            <table class="table table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th scope="col">Employee Name</th>
+                        <th scope="col">Contact Info</th>
+                        <th scope="col">Address</th>
+                        <th scope="col">Job Title</th>
+                        <th scope="col">Department</th>
+                        <th scope="col">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% if requests %}
+                    {% for request in requests %}
+                    <tr>
+                        <td>{{ request[0] }}</td>
+                        <td>{{ request[1] }}</td>
+                        <td>{{ request[2] }}</td>
+                        <form method="POST" action="{{ url_for('handle_request')}}">
+                            <input type="hidden" name="request_index" value="{{ request[0] }}">
+                            <td><input type="text" name="job" id="job"></td>
+                            <td><select name="department" id="department">
+                                <option disabled selected>Choose Department</option>
+                                <option value="POS">POS</option>
+                                <option value="Site">Site</option>
+                                <option value="Warehouse">Warehouse</option>
+                            </select></td>
+                            <td>
+                                <button type="submit" class="btn btn-success" name="accept" value="accept">Accept</button>
+                                <button type="submit" class="btn btn-danger" name="reject" value="reject">Reject</button>
+                            </td>
+                        </form>
+                    </tr>
+                    {% endfor %}
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+{% endblock %}
