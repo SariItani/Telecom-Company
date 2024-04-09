@@ -25,6 +25,7 @@
                     {% if data %}
                     <script>console.log(data);</script>
                     {% for customer in data %}
+                    {% if  customer[7] != None%}
                     <tr>
                         <td style="font-style: normal;">{{ customer[1] }}</td>  
                         <td style="font-style: normal;">{{ customer[2] }}</td>
@@ -34,6 +35,7 @@
                         <td style="font-style: normal;">{{ customer[7] }}</td>  
                         <td style="font-style: normal;">{{ customer[8] }}</td>  
                     </tr>
+                    {% endif %}
                     {% endfor %}
                     {% endif %}
                 </tbody>
