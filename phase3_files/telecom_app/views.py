@@ -180,7 +180,7 @@ def handle_request():
                         file.write(line)
 
             return redirect(url_for('requests'))
-
+        
         elif request.form.get('reject'):
             request_index = request.form.get('request_index')
             flash('Employee Rejected and will never bother us again', 'error')
@@ -191,9 +191,41 @@ def handle_request():
                     if request_index not in line:
                         file.write(line)
             return redirect(url_for('requests'))
+        
+        elif request.form.get('reject-account'):
+            pass
+        
+        elif request.form.get('accept-account'):
+            pass
     else:
         flash('Invalid request method', 'error')
         return redirect(url_for('requests'))
+
+@app.route('/employees/customers', methods=['GET', 'POST'])
+def customers_query():
+    if 'username' in session:
+        cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (session['username'],))
+        employee = cursor.fetchone()
+        if employee:
+            # Query to retrieve customer information along with associated account and SIM card details
+            sql = """
+                SELECT c.cid AS CustomerID, c.customer_name AS CustomerName, c.contact_info AS ContactInfo, c.customer_address AS Address,
+                        a.aid AS AccountID, a.account_type AS AccountType, a.account_status AS AccountStatus,
+                        s.IMSI AS SIMCardIMSI, s.phone_number AS SIMCardPhoneNumber
+                    FROM Customers c
+                    LEFT JOIN Accounts a ON c.cid = a.cid
+                    LEFT JOIN SIM_Cards s ON a.aid = s.aid
+                    ORDER BY c.cid;
+                """
+            cursor.execute(sql)
+            data = cursor.fetchall()
+            print(data)
+            return render_template('customers-query.html', data=data)
+        else:
+            session.pop('username', None)
+            return redirect(url_for('login'))
+    else:
+        return redirect(url_for('login'))
 
 @app.route('/customers', methods=['GET', 'POST'])
 def customer_portal():

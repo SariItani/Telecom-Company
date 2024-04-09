@@ -2,46 +2,109 @@
 {% block content %}
 <section style="background-color: rgb(225, 235, 243)" class="masthead text-center" id="portfolio">
     <div class="container d-flex align-items-center flex-column">
-        <h1 class="mb-4">Employee Requests</h1>
-        <div class="table-responsive">
-            <table class="table table-striped">
-                <thead class="table-dark">
-                    <tr>
-                        <th scope="col">Employee Name</th>
-                        <th scope="col">Contact Info</th>
-                        <th scope="col">Address</th>
-                        <th scope="col">Job Title</th>
-                        <th scope="col">Department</th>
-                        <th scope="col">Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% if requests %}
-                    {% for request in requests %}
-                    <tr>
-                        <td>{{ request[0] }}</td>
-                        <td>{{ request[1] }}</td>
-                        <td>{{ request[2] }}</td>
-                        <form method="POST" action="{{ url_for('handle_request')}}">
-                            <input type="hidden" name="request_index" value="{{ request[0] }}">
-                            <td><input type="text" name="job" id="job"></td>
-                            <td><select name="department" id="department">
-                                <option disabled selected>Choose Department</option>
-                                <option value="POS">POS</option>
-                                <option value="Site">Site</option>
-                                <option value="Warehouse">Warehouse</option>
-                            </select></td>
-                            <td>
-                                <button type="submit" class="btn btn-success" name="accept" value="accept">Accept</button>
-                                <button type="submit" class="btn btn-danger" name="reject" value="reject">Reject</button>
-                            </td>
-                        </form>
-                    </tr>
-                    {% endfor %}
-                    {% endif %}
-                </tbody>
-            </table>
+        <h1 id="titleHeader" class="mb-4">Employee Requests</h1>
+        
+        <div class="mb-3">
+            <label for="requestType" class="form-label">Select Request Type:</label>
+            <select class="form-select" id="requestType" onchange="changeRequestType(this.value)">
+                <option value="employee">Employee Requests</option>
+                <option value="customer">Customer Account Requests</option>
+            </select>
         </div>
+        
+        <div id="employeeRequests">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Employee Name</th>
+                            <th scope="col">Contact Info</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Job Title</th>
+                            <th scope="col">Department</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if employeeRequests %}
+                        {% for request in employeeRequests %}
+                        <tr>
+                            <td>{{ request[0] }}</td>
+                            <td>{{ request[1] }}</td>
+                            <td>{{ request[2] }}</td>
+                            <form method="POST" action="{{ url_for('handle_request')}}">
+                                <input type="hidden" name="request_index" value="{{ request[0] }}">
+                                <td><input type="text" name="job" id="job"></td>
+                                <td>
+                                    <select name="department" id="department">
+                                        <option disabled selected>Choose Department</option>
+                                        <option value="POS">POS</option>
+                                        <option value="Site">Site</option>
+                                        <option value="Warehouse">Warehouse</option>
+                                    </select>
+                                </td>
+                                <td>
+                                    <button type="submit" class="btn btn-success" name="accept" value="accept">Accept</button>
+                                    <button type="submit" class="btn btn-danger" name="reject" value="reject">Reject</button>
+                                </td>
+                            </form>
+                        </tr>
+                        {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <div id="customerAccoutRequests" style="display: none;">
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead class="table-dark">
+                        <tr>
+                            <th scope="col">Customer Name</th>
+                            <th scope="col">Contact Info</th>
+                            <th scope="col">Address</th>
+                            <th scope="col">Type</th>
+                            <th scope="col">Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% if accounts %}
+                            {% for account in accounts %}
+                                <tr>
+                                    <td>{{ account[0] }}</td>
+                                    <td>{{ account[1] }}</td>
+                                    <td>{{ account[2] }}</td>
+                                    <td>{{ account[3] }}</td>
+                                    <td>{{ account[4] }}</td>
+                                    <td>
+                                        <form method="POST" action="{{ url_for('handle_request') }}">
+                                            <input type="hidden" name="account_index" value="{{ account[0] }}">
+                                            <button type="submit" class="btn btn-success" name="accept-account" value="accept">Accept</button>
+                                            <button type="submit" class="btn btn-danger" name="reject-account" value="reject">Accept</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        {% endif %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <script>
+            function changeRequestType(requestType) {
+                if (requestType === "employee") {
+                    document.getElementById("employeeRequests").style.display = "block";
+                    document.getElementById("titleHeader").textContent = "Employee Requests";
+                    document.getElementById("customerAccoutRequests").style.display = "none";
+                } else {
+                    document.getElementById("employeeRequests").style.display = "none";
+                    document.getElementById("titleHeader").textContent = "Customer Account Requests";
+                    document.getElementById("customerAccoutRequests").style.display = "block";
+                }
+            }
+        </script>
     </div>
 </section>
 {% endblock %}
