@@ -1,0 +1,25 @@
+{% extends 'index-customers.html' %}
+
+{% block morecss %}
+{% endblock %}
+
+{% block content %}
+<section style="background-color: rgb(185, 157, 238)" class="masthead text-center" id="portfolio">
+    <div class="container d-flex align-items-center flex-column">
+        <h1 class="mb-4">Request an Account</h1>
+        <form method="POST" action="{{ url_for('account') }}">
+            <div class="mb-3">
+                <label for="accountType" class="form-label">Account Type</label>
+                <select class="form-select" id="accountType" name="accountType">
+                    <option value="Individual">Individual</option>
+                    <option value="Business">Business</option>
+                </select>
+            </div>
+            <button type="submit" class="btn btn-success">Submit</button>
+        </form>
+    </div>
+</section>
+{% endblock %}
+
+{% block morejs %}
+{% endblock %}

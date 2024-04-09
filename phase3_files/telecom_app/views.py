@@ -1,4 +1,5 @@
 import csv
+import random
 from flask import render_template, request, redirect, url_for, session, flash
 import pandas as pd
 from telecom_app import app, mysql, cursor
@@ -140,7 +141,11 @@ def requests():
                 csv_reader = csv.reader(file)
                 requests = list(csv_reader)
                 print(requests)
-            return render_template('requests.html', requests=requests)
+            with open('telecom_app/account_requests.csv', 'r', newline="") as file:
+                csv_reader = csv.reader(file)
+                accounts = list(csv_reader)
+                print(accounts)
+            return render_template('requests.html', employeeRequests=requests, accounts=accounts)
         else:
             session.pop('username', None)
             return redirect(url_for('login'))
@@ -192,11 +197,43 @@ def handle_request():
                         file.write(line)
             return redirect(url_for('requests'))
         
-        elif request.form.get('reject-account'):
-            pass
-        
         elif request.form.get('accept-account'):
-            pass
+            request_index = request.form.get('account_index')
+            with open('telecom_app/account_requests.csv', 'r') as file:
+                reader = csv.reader(file)
+                for row in reader:
+                    if row[0] == request_index:
+                        account_data = row
+                        break
+            cursor.execute("INSERT INTO Accounts (cid, account_type, account_status) VALUES (%s, %s, %s)",
+                           (account_data[0], account_data[-1], "Active"))
+            mysql.commit()
+            with open('telecom_app/account_requests.csv', 'r') as file:
+                lines = file.readlines()
+            with open('telecom_app/account_requests.csv', 'w') as file:
+                for line in lines:
+                    if request_index not in line:
+                        file.write(line)
+            cursor.execute("SELECT IMSI FROM SIM_Cards WHERE sim_status = 'Inactive'")
+            inactive_sim_cards = cursor.fetchall()
+            if inactive_sim_cards:
+                random_inactive_sim = random.choice(inactive_sim_cards)[0]
+                cursor.execute("UPDATE SIM_Cards SET aid = (SELECT aid FROM Accounts ORDER BY RAND() LIMIT 1), sim_status = 'Active' WHERE IMSI = %s", (random_inactive_sim,))
+                mysql.commit()
+            flash('Account created successfully', 'success')
+            return redirect(url_for('requests', request_type='customer_accounts'))
+        
+        elif request.form.get('reject-account'):
+            request_index = request.form.get('account_index')
+            flash('Account creation request rejected', 'error')
+            with open('telecom_app/account_requests.csv', 'r') as file:
+                lines = file.readlines()
+            with open('telecom_app/account_requests.csv', 'w') as file:
+                for line in lines:
+                    if request_index not in line:
+                        file.write(line)
+            return redirect(url_for('requests', request_type='customer_accounts'))
+        
     else:
         flash('Invalid request method', 'error')
         return redirect(url_for('requests'))
@@ -234,6 +271,29 @@ def customer_portal():
         customer = cursor.fetchone()
         if customer:
             return render_template('index-customers.html', customer=customer, username=customer[1])
+        else:
+            session.pop('username', None)
+            return redirect(url_for('login'))
+    else:
+        return redirect(url_for('login'))
+    
+@app.route('/customers/account', methods=['GET', 'POST'])
+def account():
+    if request.method == 'POST':
+        print(request.form)
+        cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
+        customer = cursor.fetchone()
+        print(customer)
+        with open('telecom_app/account_requests.csv', "a", newline="") as file:
+            writer = csv.writer(file)
+            writer.writerow((customer[0], customer[1], customer[2], customer[3], request.form.get('accountType')))
+        flash("Wait for the application process now.")
+        return redirect(url_for('customer_portal'))
+    if 'username' in session:
+        cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
+        customer = cursor.fetchone()
+        if customer:
+            return render_template('account.html')
         else:
             session.pop('username', None)
             return redirect(url_for('login'))

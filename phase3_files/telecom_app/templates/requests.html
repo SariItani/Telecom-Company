@@ -72,7 +72,6 @@
                         {% if accounts %}
                             {% for account in accounts %}
                                 <tr>
-                                    <td>{{ account[0] }}</td>
                                     <td>{{ account[1] }}</td>
                                     <td>{{ account[2] }}</td>
                                     <td>{{ account[3] }}</td>
@@ -81,7 +80,7 @@
                                         <form method="POST" action="{{ url_for('handle_request') }}">
                                             <input type="hidden" name="account_index" value="{{ account[0] }}">
                                             <button type="submit" class="btn btn-success" name="accept-account" value="accept">Accept</button>
-                                            <button type="submit" class="btn btn-danger" name="reject-account" value="reject">Accept</button>
+                                            <button type="submit" class="btn btn-danger" name="reject-account" value="reject">Reject</button>
                                         </form>
                                     </td>
                                 </tr>
