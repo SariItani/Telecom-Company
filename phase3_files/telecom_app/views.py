@@ -1,4 +1,5 @@
 import csv
+from datetime import datetime
 import random
 import string
 from flask import render_template, request, redirect, url_for, session, flash
@@ -245,18 +246,32 @@ def handle_request():
                         break
             cursor.execute("INSERT INTO Accounts (cid, account_type, account_status) VALUES (%s, %s, %s)",
                            (account_data[0], account_data[-1], "Active"))
+            cursor.execute("SELECT LAST_INSERT_ID()")
+            aid = cursor.fetchone()[0]
             mysql.commit()
+            
             with open('telecom_app/account_requests.csv', 'r') as file:
                 lines = file.readlines()
             with open('telecom_app/account_requests.csv', 'w') as file:
                 for line in lines:
                     if request_index not in line:
                         file.write(line)
+                        
+            cursor.execute("SELECT eid FROM Employees WHERE employee_name = %s", (session['username'],))
+            eid = cursor.fetchone()[0]
+                        
             cursor.execute("SELECT IMSI FROM SIM_Cards WHERE sim_status = 'Inactive'")
             inactive_sim_cards = cursor.fetchall()
             if inactive_sim_cards:
                 random_inactive_sim = random.choice(inactive_sim_cards)[0]
-                cursor.execute("UPDATE SIM_Cards SET aid = (SELECT aid FROM Accounts ORDER BY RAND() LIMIT 1), sim_status = 'Active' WHERE IMSI = %s", (random_inactive_sim,))
+                cursor.execute("UPDATE SIM_Cards SET aid = %s, sim_status = 'Active' WHERE IMSI = %s",
+                            (aid, random_inactive_sim))
+                if account_data[-1] == 'Individual':
+                    amount = 5.67
+                elif account_data[-1] == 'Business':
+                    amount = 21.67
+                cursor.execute("INSERT INTO Payments (aid, eid, amount, payment_method, due_date, payment_date) VALUES (%s, %s, %s, %s, %s, %s)",
+                       (aid, eid, amount, account_data[4], datetime.now(), datetime.now()))
                 mysql.commit()
             flash('Account created successfully', 'success')
             return redirect(url_for('requests', request_type='customer_accounts'))
@@ -323,7 +338,7 @@ def account():
         print(customer)
         with open('telecom_app/account_requests.csv', "a", newline="") as file:
             writer = csv.writer(file)
-            writer.writerow((customer[0], customer[1], customer[2], customer[3], request.form.get('accountType')))
+            writer.writerow((customer[0], customer[1], customer[2], customer[3], request.form.get('paymentMethod'), request.form.get('accountType')))
         flash("Wait for the application process now.")
         return redirect(url_for('customer_portal'))
     if 'username' in session:

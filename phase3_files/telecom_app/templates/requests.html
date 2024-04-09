@@ -65,6 +65,7 @@
                             <th scope="col">Contact Info</th>
                             <th scope="col">Address</th>
                             <th scope="col">Type</th>
+                            <th scope="col">Payemnt Method</th>
                             <th scope="col">Actions</th>
                         </tr>
                     </thead>
@@ -76,6 +77,7 @@
                                     <td>{{ account[2] }}</td>
                                     <td>{{ account[3] }}</td>
                                     <td>{{ account[4] }}</td>
+                                    <td>{{ account[5] }}</td>
                                     <td>
                                         <form method="POST" action="{{ url_for('handle_request') }}">
                                             <input type="hidden" name="account_index" value="{{ account[0] }}">
