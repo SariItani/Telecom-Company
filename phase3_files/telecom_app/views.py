@@ -440,6 +440,20 @@ def account():
         return redirect(url_for('customer_portal'))
     return render_template('account.html')
 
+@app.route('/customers/shop', methods=['GET', 'POST'])
+def shop():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
+    customer = cursor.fetchone()
+    if not customer:
+        session.pop('username', None)
+        return redirect(url_for('login'))
+    if request.method == 'POST':
+        print(request.form)
+        return redirect(url_for('customer_portal'))
+    return render_template('shop.html')
+
 @app.route('/logout')
 def logout():
     session.clear()
