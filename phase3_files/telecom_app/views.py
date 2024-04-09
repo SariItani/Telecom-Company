@@ -259,7 +259,7 @@ def handle_request():
                         
             cursor.execute("SELECT eid FROM Employees WHERE employee_name = %s", (session['username'],))
             eid = cursor.fetchone()[0]
-                        
+
             cursor.execute("SELECT IMSI FROM SIM_Cards WHERE sim_status = 'Inactive'")
             inactive_sim_cards = cursor.fetchall()
             if inactive_sim_cards:
