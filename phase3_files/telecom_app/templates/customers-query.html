@@ -19,6 +19,9 @@
                         <th scope="col">Status</th>
                         <th scope="col">IMSI</th>
                         <th scope="col">Phone Number</th>
+                        <th scope="col">Balance</th>
+                        <th scope="col">Limiting Due</th>
+                        <th scope="col">Amount</th>
                     </tr>
                 </thead>
                 <tbody style="text-align: left;">
@@ -27,13 +30,16 @@
                     {% for customer in data %}
                     {% if  customer[7] != None%}
                     <tr>
-                        <td style="font-style: normal;">{{ customer[1] }}</td>  
+                        <td style="font-style: normal;">{{ customer[0] }}</td>  
+                        <td style="font-style: normal;">{{ customer[1] }}</td>
                         <td style="font-style: normal;">{{ customer[2] }}</td>
-                        <td style="font-style: normal;">{{ customer[3] }}</td>
+                        <td style="font-style: normal;">{{ customer[3] }}</td>  
+                        <td style="font-style: normal;">{{ customer[4] }}</td>  
                         <td style="font-style: normal;">{{ customer[5] }}</td>  
                         <td style="font-style: normal;">{{ customer[6] }}</td>  
-                        <td style="font-style: normal;">{{ customer[7] }}</td>  
-                        <td style="font-style: normal;">{{ customer[8] }}</td>  
+                        <td style="font-style: normal;">${{ customer[7] }}</td>  
+                        <td style="font-style: normal;">{{ customer[9] }}</td>  
+                        <td style="font-style: normal;">${{ customer[8] }}</td>  
                     </tr>
                     {% endif %}
                     {% endfor %}
