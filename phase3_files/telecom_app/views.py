@@ -58,7 +58,7 @@ def insert_sim_cards(num_sim_cards):
         insert_sim_card(imsi, phone_number, iccid, puk, pin)
 
 # Insert 20 SIM cards each time the website reloads
-insert_sim_cards(20)
+insert_sim_cards(200)
 
 def populate_services_table():
     bundles = [
@@ -69,7 +69,24 @@ def populate_services_table():
         {"service_name": "Recharge Card $75", "description": "Recharge card bundle - $75", "price": 75.00},
         {"service_name": "Recharge Card $100", "description": "Recharge card bundle - $100", "price": 100.00},
         {"service_name": "Recharge Card $150", "description": "Recharge card bundle - $150", "price": 150.00},
-        {"service_name": "Standard Bundle", "description": "Monthly service charge", "price": 5.00}
+        {"service_name": "Standard Bundle", "description": "Monthly service charge", "price": 5.00},
+        {"service_name": "Basic Data Package", "description": "Basic data bundle", "price": 10.00},
+        {"service_name": "Standard Data Package", "description": "Standard data bundle", "price": 20.00},
+        {"service_name": "Premium Data Package", "description": "Premium data bundle", "price": 30.00},
+        {"service_name": "Basic Voice Package", "description": "Basic voice bundle", "price": 10.00},
+        {"service_name": "Standard Voice Package", "description": "Standard voice bundle", "price": 20.00},
+        {"service_name": "Unlimited Voice Package", "description": "Unlimited voice bundle", "price": 40.00},
+        {"service_name": "Data + Voice Combo", "description": "Data and voice bundle", "price": 25.00},
+        {"service_name": "Data + SMS Combo", "description": "Data and SMS bundle", "price": 25.00},
+        {"service_name": "Voice + SMS Combo", "description": "Voice and SMS bundle", "price": 25.00},
+        {"service_name": "International Calling Package", "description": "International calling bundle", "price": 20.00},
+        {"service_name": "International Roaming Package", "description": "International roaming bundle", "price": 15.00},
+        {"service_name": "International Messaging Package", "description": "International messaging bundle", "price": 10.00},
+        {"service_name": "Streaming Package", "description": "Streaming service bundle", "price": 12.00},
+        {"service_name": "Gaming Package", "description": "Gaming bundle", "price": 8.00},
+        {"service_name": "Content Bundle", "description": "Content bundle", "price": 15.00},
+        {"service_name": "Family Plan", "description": "Family plan bundle", "price": 50.00},
+        {"service_name": "Parental Control Package", "description": "Parental control bundle", "price": 5.00}
     ]
 
     cursor.execute("SELECT * FROM Services")
