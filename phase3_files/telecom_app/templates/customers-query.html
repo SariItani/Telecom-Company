@@ -24,7 +24,7 @@
                         <th scope="col">Amount</th>
                     </tr>
                 </thead>
-                <tbody style="text-align: left;">
+                <tbody style="text-align: center;">
                     {% if data %}
                     <script>console.log(data);</script>
                     {% for customer in data %}
@@ -38,8 +38,13 @@
                         <td style="font-style: normal;">{{ customer[5] }}</td>  
                         <td style="font-style: normal;">{{ customer[6] }}</td>  
                         <td style="font-style: normal;">${{ customer[7] }}</td>  
+                        {% if  customer[8] != None %}
                         <td style="font-style: normal;">{{ customer[9] }}</td>  
                         <td style="font-style: normal;">${{ customer[8] }}</td>  
+                        {% else %}
+                        <td style="font-style: normal;">-</td>  
+                        <td style="font-style: normal;">-</td> 
+                        {%endif%}
                     </tr>
                     {% endif %}
                     {% endfor %}

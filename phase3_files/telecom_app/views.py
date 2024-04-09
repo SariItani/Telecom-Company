@@ -350,26 +350,32 @@ def customers_query():
         if employee:
             sql = """
                 SELECT 
-                    c.customer_name AS CustomerName, 
-                    c.contact_info AS ContactInfo, 
-                    c.customer_address AS Address,
-                    a.account_type AS AccountType, 
-                    a.account_status AS AccountStatus,
-                    s.IMSI AS SIMCardIMSI,
-                    s.phone_number AS SIMCardPhoneNumber,
-                    a.balance AS AccountBalance,
-                    p.amount AS NearestPaymentAmount,
-                    p.due_date AS NearestPaymentDueDate
-                FROM 
-                    Customers c
-                LEFT JOIN 
-                    Accounts a ON c.cid = a.cid
-                LEFT JOIN 
-                    SIM_Cards s ON a.aid = s.aid
-                LEFT JOIN 
-                    Payments p ON a.aid = p.aid AND p.due_date >= CURDATE()
-                ORDER BY 
-                    c.customer_name;
+    c.customer_name AS CustomerName, 
+    c.contact_info AS ContactInfo, 
+    c.customer_address AS Address,
+    a.account_type AS AccountType, 
+    a.account_status AS AccountStatus,
+    s.IMSI AS SIMCardIMSI,
+    s.phone_number AS SIMCardPhoneNumber,
+    a.balance AS AccountBalance,
+    CASE
+        WHEN p.payment_date IS NULL THEN p.amount
+        ELSE NULL
+    END AS NearestPaymentAmount,
+    CASE
+        WHEN p.payment_date IS NULL THEN p.due_date
+        ELSE NULL
+    END AS NearestPaymentDueDate
+FROM 
+    Customers c
+LEFT JOIN 
+    Accounts a ON c.cid = a.cid
+LEFT JOIN 
+    SIM_Cards s ON a.aid = s.aid
+LEFT JOIN 
+    Payments p ON a.aid = p.aid AND p.due_date >= CURDATE()
+ORDER BY 
+    c.customer_name;
                 """
             cursor.execute(sql)
             data = cursor.fetchall()
