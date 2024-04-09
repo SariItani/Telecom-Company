@@ -38,7 +38,7 @@ def login():
             cursor.execute("SELECT * FROM Employees WHERE employee_name = %s", (username,))
 
         user = cursor.fetchone()
-        
+
         if user:
             hashed_password = user[-1]
             if bcrypt.check_password_hash(hashed_password, password):
@@ -146,7 +146,7 @@ def requests():
             return redirect(url_for('login'))
     else:
         return redirect(url_for('login'))
-    
+
 @app.route('/handle-request', methods=['POST'])
 def handle_request():
     if request.method == 'POST':
