@@ -20,13 +20,6 @@ def initialize_root_user():
 
 initialize_root_user()
 
-# CREATE TABLE IF NOT EXISTS Employees (
-#     we will take care of those by creating an HR manager hardcoded into the database
-#     department ENUM('POS', 'Site', 'Warehouse'),
-#     job_title VARCHAR(50) NOT NULL,
-#     PRIMARY KEY (eid)
-# ); 
-
 @app.route('/')
 def index():
     session.clear()
