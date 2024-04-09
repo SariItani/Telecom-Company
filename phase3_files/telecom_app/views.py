@@ -7,19 +7,19 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt(app)
 
-def initialize_root_user():
-    cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
-    root_user = cursor.fetchone()
-    if not root_user:
-        hashed_password = bcrypt.generate_password_hash('root').decode('utf-8')
-        cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
-                       ('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager', hashed_password))
-        mysql.commit()
-        print("Root user added successfully.")
-    else:
-        print("Root user already exists.")
+# def initialize_root_user():
+#     cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
+#     root_user = cursor.fetchone()
+#     if not root_user:
+#         hashed_password = bcrypt.generate_password_hash('root').decode('utf-8')
+#         cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
+#                        ('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager', hashed_password))
+#         mysql.commit()
+#         print("Root user added successfully.")
+#     else:
+#         print("Root user already exists.")
 
-initialize_root_user()
+# initialize_root_user()
 
 # def insert_sim_card(IMSI, phone_number, ICCID, PUK, PIN):
 #         sql = "INSERT INTO SIM_Cards (IMSI, phone_number, sim_status, ICCID, PUK, PIN) VALUES (%s, %s, %s, %s, %s, %s)"
