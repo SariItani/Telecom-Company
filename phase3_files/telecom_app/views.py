@@ -350,32 +350,32 @@ def customers_query():
         if employee:
             sql = """
                 SELECT 
-    c.customer_name AS CustomerName, 
-    c.contact_info AS ContactInfo, 
-    c.customer_address AS Address,
-    a.account_type AS AccountType, 
-    a.account_status AS AccountStatus,
-    s.IMSI AS SIMCardIMSI,
-    s.phone_number AS SIMCardPhoneNumber,
-    a.balance AS AccountBalance,
-    CASE
-        WHEN p.payment_date IS NULL THEN p.amount
-        ELSE NULL
-    END AS NearestPaymentAmount,
-    CASE
-        WHEN p.payment_date IS NULL THEN p.due_date
-        ELSE NULL
-    END AS NearestPaymentDueDate
-FROM 
-    Customers c
-LEFT JOIN 
-    Accounts a ON c.cid = a.cid
-LEFT JOIN 
-    SIM_Cards s ON a.aid = s.aid
-LEFT JOIN 
-    Payments p ON a.aid = p.aid AND p.due_date >= CURDATE()
-ORDER BY 
-    c.customer_name;
+                    c.customer_name AS CustomerName, 
+                    c.contact_info AS ContactInfo, 
+                    c.customer_address AS Address,
+                    a.account_type AS AccountType, 
+                    a.account_status AS AccountStatus,
+                    s.IMSI AS SIMCardIMSI,
+                    s.phone_number AS SIMCardPhoneNumber,
+                    a.balance AS AccountBalance,
+                    CASE
+                        WHEN p.payment_date IS NULL THEN p.amount
+                        ELSE NULL
+                    END AS NearestPaymentAmount,
+                    CASE
+                        WHEN p.payment_date IS NULL THEN p.due_date
+                        ELSE NULL
+                    END AS NearestPaymentDueDate
+                FROM 
+                    Customers c
+                LEFT JOIN 
+                    Accounts a ON c.cid = a.cid
+                LEFT JOIN 
+                    SIM_Cards s ON a.aid = s.aid
+                LEFT JOIN 
+                    Payments p ON a.aid = p.aid AND p.due_date >= CURDATE()
+                ORDER BY 
+                    c.customer_name;
                 """
             cursor.execute(sql)
             data = cursor.fetchall()
@@ -402,26 +402,26 @@ def customer_portal():
     
 @app.route('/customers/account', methods=['GET', 'POST'])
 def account():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+    cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
+    customer = cursor.fetchone()
+    if not customer:
+        session.pop('username', None)
+        return redirect(url_for('login'))
     if request.method == 'POST':
         print(request.form)
-        cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
-        customer = cursor.fetchone()
-        print(customer)
+        cursor.execute("SELECT * FROM Accounts WHERE cid = %s", (customer[0],))
+        existing_account = cursor.fetchone()
+        if existing_account:
+            flash("You already have an existing account.")
+            return redirect(url_for('customer_portal'))
         with open('telecom_app/account_requests.csv', "a", newline="") as file:
             writer = csv.writer(file)
             writer.writerow((customer[0], customer[1], customer[2], customer[3], request.form.get('paymentMethod'), request.form.get('accountType')))
         flash("Wait for the application process now.")
         return redirect(url_for('customer_portal'))
-    if 'username' in session:
-        cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
-        customer = cursor.fetchone()
-        if customer:
-            return render_template('account.html')
-        else:
-            session.pop('username', None)
-            return redirect(url_for('login'))
-    else:
-        return redirect(url_for('login'))
+    return render_template('account.html')
 
 @app.route('/logout')
 def logout():
