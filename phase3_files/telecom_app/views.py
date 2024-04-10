@@ -72,23 +72,21 @@ def populate_services_table():
         {"service_name": "Recharge Card $100", "description": "Recharge card bundle - $100", "price": 100.00},
         {"service_name": "Recharge Card $150", "description": "Recharge card bundle - $150", "price": 150.00},
         {"service_name": "Standard Bundle", "description": "Monthly service charge", "price": 5.00},
-        {"service_name": "Basic Data Package", "description": "Basic data bundle", "price": 10.00},
-        {"service_name": "Standard Data Package", "description": "Standard data bundle", "price": 20.00},
-        {"service_name": "Premium Data Package", "description": "Premium data bundle", "price": 30.00},
-        {"service_name": "Basic Voice Package", "description": "Basic voice bundle", "price": 10.00},
-        {"service_name": "Standard Voice Package", "description": "Standard voice bundle", "price": 20.00},
-        {"service_name": "Unlimited Voice Package", "description": "Unlimited voice bundle", "price": 40.00},
-        {"service_name": "Data + Voice Combo", "description": "Data and voice bundle", "price": 25.00},
-        {"service_name": "Data + SMS Combo", "description": "Data and SMS bundle", "price": 25.00},
-        {"service_name": "Voice + SMS Combo", "description": "Voice and SMS bundle", "price": 25.00},
-        {"service_name": "International Calling Package", "description": "International calling bundle", "price": 20.00},
-        {"service_name": "International Roaming Package", "description": "International roaming bundle", "price": 15.00},
-        {"service_name": "International Messaging Package", "description": "International messaging bundle", "price": 10.00},
-        {"service_name": "Streaming Package", "description": "Streaming service bundle", "price": 12.00},
-        {"service_name": "Gaming Package", "description": "Gaming bundle", "price": 8.00},
-        {"service_name": "Content Bundle", "description": "Content bundle", "price": 15.00},
-        {"service_name": "Family Plan", "description": "Family plan bundle", "price": 50.00},
-        {"service_name": "Parental Control Package", "description": "Parental control bundle", "price": 5.00}
+        {"service_name": "Basic Data Package", "description": "500MB Internet Access", "price": 10.00},
+        {"service_name": "Standard Data Package", "description": "1500MB Internet Access", "price": 20.00},
+        {"service_name": "Premium Data Package", "description": "5000MB Internet Access", "price": 30.00},
+        {"service_name": "Basic Voice Package", "description": "90Mins Voice", "price": 10.00},
+        {"service_name": "Standard Voice Package", "description": "270Mins Voice", "price": 20.00},
+        {"service_name": "Unlimited Voice Package", "description": "Unlimited Voice", "price": 40.00},
+        {"service_name": "Data + Voice Combo", "description": "750MB Internet and 75 Mins Voice", "price": 25.00},
+        {"service_name": "Data + SMS Combo", "description": "750MB Internet and 1000SMS Messages", "price": 25.00},
+        {"service_name": "Voice + SMS Combo", "description": "75Mins Voice and 1000SMS Messages", "price": 25.00},
+        {"service_name": "International Calling Package", "description": "Enable International calling for a month", "price": 20.00},
+        {"service_name": "International Roaming Package", "description": "Enable International roaming for a month", "price": 15.00},
+        {"service_name": "International Messaging Package", "description": "Enable International messaging for a month", "price": 10.00},
+        {"service_name": "Streaming Package", "description": "1080P Streaming - 4000MB Dedicated Internet", "price": 12.00},
+        {"service_name": "Gaming Package", "description": "<100Ping Gaming - 4000MB Dedicated Internet", "price": 8.00},
+        {"service_name": "Content Bundle", "description": "4K Content - 4000MB Dedicated Internet", "price": 15.00},
     ]
 
     cursor.execute("SELECT * FROM Services")
@@ -454,15 +452,20 @@ def shop():
         pid = request.form.get('buy')
         cursor.execute(f"SELECT * FROM Services WHERE pid={pid}")
         service = cursor.fetchone()
-
-        cursor.execute("SELECT aid FROM Accounts WHERE cid = (SELECT cid FROM Customers WHERE customer_name = %s)", (session['username'],))
-        account_id = cursor.fetchone()[0]
+        try:
+            cursor.execute("SELECT aid FROM Accounts WHERE cid = (SELECT cid FROM Customers WHERE customer_name = %s)", (session['username'],))
+            account_id = cursor.fetchone()[0]
+        except:
+            return redirect(url_for('customer_portal'))
         price = service[-1]
         today = datetime.now().date()
         end_date = today + timedelta(days=30)
         cursor.execute("SELECT IMSI FROM SIM_Cards WHERE aid = %s", (account_id,))
         imsi = cursor.fetchone()[0]
         
+        recharge = False
+        if service[1] in ["Recharge Card $7", "Recharge Card $15", "Recharge Card $30", "Recharge Card $50", "Recharge Card $75", "Recharge Card $100", "Recharge Card $150"]:
+            recharge = True
         if service[1] in ["Recharge Card $7", "Recharge Card $15", "Recharge Card $30", "Recharge Card $50", "Recharge Card $75", "Recharge Card $100", "Recharge Card $150", "International Calling Package", "International Roaming Package", "International Messaging Package"]:
             renewal = 'Manual'
         else:
@@ -471,8 +474,13 @@ def shop():
         
         cursor.execute("SELECT LAST_INSERT_ID()")
         sub_id = cursor.fetchone()[0]
+        
         cursor.execute("INSERT INTO Payments (aid, sub_id, due_date, amount, payment_method) VALUES (%s, %s, %s, %s, %s)", (account_id, sub_id, today, price, 'Credit Card'))
-        cursor.execute("UPDATE Accounts SET balance = balance - %s WHERE aid = %s", (price, account_id))
+        
+        if recharge:
+            cursor.execute("UPDATE Accounts SET balance = balance + %s WHERE aid = %s", (price, account_id))
+        else:
+            cursor.execute("UPDATE Accounts SET balance = balance - %s WHERE aid = %s", (price, account_id))
         mysql.commit()
 
         return redirect(url_for('shop'))
