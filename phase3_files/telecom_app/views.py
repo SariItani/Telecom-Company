@@ -8,6 +8,8 @@ from flask_bcrypt import Bcrypt
 
 bcrypt = Bcrypt(app)
 
+# make a constant loop that runs continuously in the backend that always checks for overdue payments and deactivates the accounts and dismantles the SIM Card from that account.
+
 def initialize_root_user():
     cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
     root_user = cursor.fetchone()
@@ -444,15 +446,38 @@ def account():
 def shop():
     if 'username' not in session:
         return redirect(url_for('login'))
-    cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (session['username'],))
-    customer = cursor.fetchone()
-    if not customer:
-        session.pop('username', None)
-        return redirect(url_for('login'))
+
+    cursor.execute("SELECT * FROM Services")
+    services = cursor.fetchall()
+
     if request.method == 'POST':
-        print(request.form)
-        return redirect(url_for('customer_portal'))
-    return render_template('shop.html')
+        pid = request.form.get('buy')
+        cursor.execute(f"SELECT * FROM Services WHERE pid={pid}")
+        service = cursor.fetchone()
+
+        cursor.execute("SELECT aid FROM Accounts WHERE cid = (SELECT cid FROM Customers WHERE customer_name = %s)", (session['username'],))
+        account_id = cursor.fetchone()[0]
+        price = service[-1]
+        today = datetime.now().date()
+        end_date = today + timedelta(days=30)
+        cursor.execute("SELECT IMSI FROM SIM_Cards WHERE aid = %s", (account_id,))
+        imsi = cursor.fetchone()[0]
+        
+        if service[1] in ["Recharge Card $7", "Recharge Card $15", "Recharge Card $30", "Recharge Card $50", "Recharge Card $75", "Recharge Card $100", "Recharge Card $150", "International Calling Package", "International Roaming Package", "International Messaging Package"]:
+            renewal = 'Manual'
+        else:
+            renewal = 'Auto'
+        cursor.execute("INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES (%s, %s, %s, %s, %s)", (pid, imsi, today, end_date, renewal))
+        
+        cursor.execute("SELECT LAST_INSERT_ID()")
+        sub_id = cursor.fetchone()[0]
+        cursor.execute("INSERT INTO Payments (aid, sub_id, due_date, amount, payment_method) VALUES (%s, %s, %s, %s, %s)", (account_id, sub_id, today, price, 'Credit Card'))
+        cursor.execute("UPDATE Accounts SET balance = balance - %s WHERE aid = %s", (price, account_id))
+        mysql.commit()
+
+        return redirect(url_for('shop'))
+
+    return render_template('shop.html', services=services)
 
 @app.route('/logout')
 def logout():
