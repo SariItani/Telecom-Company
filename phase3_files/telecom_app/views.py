@@ -366,33 +366,23 @@ def customers_query():
         employee = cursor.fetchone()
         if employee:
             sql = """
-                SELECT 
-                    c.customer_name AS CustomerName, 
-                    c.contact_info AS ContactInfo, 
+                SELECT
+                    c.customer_name AS CustomerName,
+                    c.contact_info AS ContactInfo,
                     c.customer_address AS Address,
-                    a.account_type AS AccountType, 
+                    a.account_type AS AccountType,
                     a.account_status AS AccountStatus,
                     s.IMSI AS SIMCardIMSI,
                     s.phone_number AS SIMCardPhoneNumber,
                     a.balance AS AccountBalance,
-                    CASE
-                        WHEN p.payment_date IS NULL THEN p.amount
-                        ELSE NULL
-                    END AS NearestPaymentAmount,
-                    CASE
-                        WHEN p.payment_date IS NULL THEN p.due_date
-                        ELSE NULL
-                    END AS NearestPaymentDueDate
-                FROM 
-                    Customers c
-                LEFT JOIN 
-                    Accounts a ON c.cid = a.cid
-                LEFT JOIN 
-                    SIM_Cards s ON a.aid = s.aid
-                LEFT JOIN 
-                    Payments p ON a.aid = p.aid AND p.due_date >= CURDATE()
-                ORDER BY 
-                    c.customer_name;
+                MAX(sub.ending_date) AS NextDueDate  -- Get latest subscription's ending date
+                FROM Customers c
+                LEFT JOIN Accounts a ON c.cid = a.cid
+                LEFT JOIN SIM_Cards s ON a.aid = s.aid
+                LEFT JOIN Subscriptions sub ON s.IMSI = sub.IMSI  -- Join with Subscriptions table
+                WHERE sub.ending_date >= CURDATE()  -- Filter for future ending dates
+                GROUP BY c.cid, a.aid, s.IMSI, s.phone_number
+                ORDER BY c.customer_name;
                 """
             cursor.execute(sql)
             data = cursor.fetchall()
@@ -470,15 +460,23 @@ def shop():
             renewal = 'Manual'
         else:
             renewal = 'Auto'
-        cursor.execute("INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES (%s, %s, %s, %s, %s)", (pid, imsi, today, end_date, renewal))
+        if renewal == 'Auto':
+            cursor.execute("INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES (%s, %s, %s, %s, %s)", (pid, imsi, today, end_date, renewal))
+        else:
+            cursor.execute("INSERT INTO Subscriptions (pid, IMSI, starting_date, ending_date, renewal) VALUES (%s, %s, %s, %s, %s)", (pid, imsi, today, today, renewal))
         
         cursor.execute("SELECT LAST_INSERT_ID()")
         sub_id = cursor.fetchone()[0]
         
-        cursor.execute("INSERT INTO Payments (aid, sub_id, due_date, amount, payment_method) VALUES (%s, %s, %s, %s, %s)", (account_id, sub_id, today, price, 'Credit Card'))
+        if renewal == 'Auto':
+            cursor.execute("INSERT INTO Payments (aid, sub_id, due_date, amount, payment_method) VALUES (%s, %s, %s, %s, %s)", (account_id, sub_id, end_date, price, 'Credit Card'))
+        
+        cursor.execute("INSERT INTO Payments (aid, sub_id, due_date, amount, payment_method, payment_date) VALUES (%s, %s, %s, %s, %s, %s)", (account_id, sub_id, today, price, 'Credit Card', today))
         
         if recharge:
             cursor.execute("UPDATE Accounts SET balance = balance + %s WHERE aid = %s", (price, account_id))
+            cursor.execute("UPDATE Subscriptions SET ending_date = %s WHERE pid = 8 AND IMSI = %s", (end_date, imsi))
+            # cursor.execute("DELETE FROM Subscriptions WHERE sub_id = %s", (sub_id,))
         else:
             cursor.execute("UPDATE Accounts SET balance = balance - %s WHERE aid = %s", (price, account_id))
         mysql.commit()
