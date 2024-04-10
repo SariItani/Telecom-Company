@@ -60,7 +60,7 @@ def insert_sim_cards(num_sim_cards):
         insert_sim_card(imsi, phone_number, iccid, puk, pin)
 
 # Insert 20 SIM cards each time the website reloads
-insert_sim_cards(200)
+insert_sim_cards(20)
 
 def populate_services_table():
     bundles = [
@@ -448,14 +448,15 @@ def profile():
     account = cursor.fetchone()
 
     cursor.execute("""
-        SELECT p.*, s.service_name
+        SELECT p.*, e.employee_name, s.service_name
         FROM Payments p
-        INNER JOIN Subscriptions sub ON p.sub_id = sub.sub_id
-        INNER JOIN Services s ON sub.pid = s.pid
+        LEFT JOIN Employees e ON p.eid = e.eid
+        LEFT JOIN Subscriptions sub ON p.sub_id = sub.sub_id
+        LEFT JOIN Services s ON sub.pid = s.pid
         INNER JOIN Accounts a ON p.aid = a.aid
         INNER JOIN Customers c ON a.cid = c.cid
         WHERE c.customer_name = %s
-        AND p.payment_date IS NOT NULL
+        AND (p.payment_date IS NOT NULL AND (p.sub_id IS NOT NULL OR p.eid IS NOT NULL))
         ORDER BY p.payment_date DESC;
     """, (username,))
     payments = cursor.fetchall()
@@ -463,15 +464,31 @@ def profile():
     cursor.execute("""
         SELECT p.*, s.service_name
         FROM Payments p
-        INNER JOIN Subscriptions sub ON p.sub_id = sub.sub_id
-        INNER JOIN Services s ON sub.pid = s.pid
+        LEFT JOIN Subscriptions sub ON p.sub_id = sub.sub_id
+        LEFT JOIN Services s ON sub.pid = s.pid
         INNER JOIN Accounts a ON p.aid = a.aid
         INNER JOIN Customers c ON a.cid = c.cid
         WHERE c.customer_name = %s
-        AND p.payment_date IS NULL
-        ORDER BY p.payment_date DESC;
+        AND (p.payment_date IS NULL AND p.sub_id IS NOT NULL)
+        ORDER BY p.due_date DESC;
     """, (username,))
-    due_payments = cursor.fetchall()
+    due_payments_with_subscription = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT p.*, e.employee_name
+        FROM Payments p
+        LEFT JOIN Employees e ON p.eid = e.eid
+        LEFT JOIN Subscriptions sub ON p.sub_id = sub.sub_id
+        INNER JOIN Accounts a ON p.aid = a.aid
+        INNER JOIN Customers c ON a.cid = c.cid
+        WHERE c.customer_name = %s
+        AND (p.payment_date IS NULL AND p.eid IS NOT NULL)
+        ORDER BY p.due_date DESC;
+    """, (username,))
+    due_payments_with_employee = cursor.fetchall()
+
+    due_payments = due_payments_with_subscription + due_payments_with_employee
+    due_payments.sort(key=lambda x: x[4], reverse=True)
 
     cursor.execute("""
         SELECT sub.*, s.service_name
@@ -500,9 +517,53 @@ def profile():
     print("due_payments:", due_payments)
     print("subscriptions:", subscriptions)
     print("sim_card:", sim_card)
-
-    return render_template('profile.html', customer=customer, account=account, payments=payments,
-                           due_payments=due_payments, subscriptions=subscriptions, sim_card=sim_card)
+    
+    profile_data = {
+        'Customer Details': {
+            'Name': customer[1],
+            'Contact Info': customer[2],
+            'Address': customer[3]
+        },
+        'Account Details': {
+            'Account ID': account[0],
+            'Balance': account[2],
+            'Type': account[3],
+            'Status': account[4]
+        },
+        'Subscription Details': [{
+            'Service Name': sub[6],
+            'Starting Date': sub[3],
+            'Ending Date': sub[4],
+            'Renewal': sub[5]
+        } for sub in subscriptions],
+        'SIM Card Details': {
+            'IMSI': sim_card[0],
+            'Phone Number': sim_card[2],
+            'Status': sim_card[3],
+            'ICCID': sim_card[4],
+            'PUK': sim_card[5],
+            'PIN': sim_card[6]
+        },
+        'Payment History': [{
+            'Amount': payment[5],
+            'Due Date': payment[4],
+            'Payment Date': payment[7],
+            'Employee Name': payment[8] if payment[8] else '-',
+            'Subscription ID': payment[3] if payment[3] else '-',
+            'Service Name': payment[-1] if payment[-1] else '-'
+        } for payment in payments],
+        'Due Payments': [{
+            'Amount': due_payment[5],
+            'Due Date': due_payment[4],
+            'Employee Name': due_payment[8] if due_payment[8] else '-',
+            'Subscription ID': due_payment[3] if due_payment[3] else '-',
+            'Service Name': due_payment[-1] if due_payment[-1] else '-'
+        } for due_payment in due_payments]
+    }
+    
+    print(profile_data)
+    
+    return render_template('profile.html', profile_data=profile_data)
 
 @app.route('/customers/shop', methods=['GET', 'POST'])
 def shop():
