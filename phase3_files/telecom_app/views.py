@@ -430,6 +430,80 @@ def account():
         return redirect(url_for('customer_portal'))
     return render_template('account.html')
 
+@app.route('/customers/profile', methods=['GET', 'POST'])
+def profile():
+    if 'username' not in session:
+        return redirect(url_for('login'))
+
+    username = session['username']
+    cursor.execute("SELECT * FROM Customers WHERE customer_name = %s", (username,))
+    customer = cursor.fetchone()
+
+    cursor.execute("""
+        SELECT a.*, c.customer_name
+        FROM Accounts a
+        INNER JOIN Customers c ON a.cid = c.cid
+        WHERE c.customer_name = %s
+    """, (username,))
+    account = cursor.fetchone()
+
+    cursor.execute("""
+        SELECT p.*, s.service_name
+        FROM Payments p
+        INNER JOIN Subscriptions sub ON p.sub_id = sub.sub_id
+        INNER JOIN Services s ON sub.pid = s.pid
+        INNER JOIN Accounts a ON p.aid = a.aid
+        INNER JOIN Customers c ON a.cid = c.cid
+        WHERE c.customer_name = %s
+        AND p.payment_date IS NOT NULL
+        ORDER BY p.payment_date DESC;
+    """, (username,))
+    payments = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT p.*, s.service_name
+        FROM Payments p
+        INNER JOIN Subscriptions sub ON p.sub_id = sub.sub_id
+        INNER JOIN Services s ON sub.pid = s.pid
+        INNER JOIN Accounts a ON p.aid = a.aid
+        INNER JOIN Customers c ON a.cid = c.cid
+        WHERE c.customer_name = %s
+        AND p.payment_date IS NULL
+        ORDER BY p.payment_date DESC;
+    """, (username,))
+    due_payments = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT sub.*, s.service_name
+        FROM Subscriptions sub
+        INNER JOIN Services s ON sub.pid = s.pid
+        INNER JOIN SIM_Cards sc ON sub.IMSI = sc.IMSI
+        INNER JOIN Accounts a ON sc.aid = a.aid
+        INNER JOIN Customers c ON a.cid = c.cid
+        WHERE c.customer_name = %s
+        AND sub.ending_date >= CURDATE();
+    """, (username,))
+    subscriptions = cursor.fetchall()
+
+    cursor.execute("""
+        SELECT sc.*, a.account_type
+        FROM SIM_Cards sc
+        INNER JOIN Accounts a ON sc.aid = a.aid
+        INNER JOIN Customers c ON a.cid = c.cid
+        WHERE c.customer_name = %s;
+    """, (username,))
+    sim_card = cursor.fetchone()
+    
+    print("customer:", customer)
+    print("account:", account)
+    print("payments:", payments)
+    print("due_payments:", due_payments)
+    print("subscriptions:", subscriptions)
+    print("sim_card:", sim_card)
+
+    return render_template('profile.html', customer=customer, account=account, payments=payments,
+                           due_payments=due_payments, subscriptions=subscriptions, sim_card=sim_card)
+
 @app.route('/customers/shop', methods=['GET', 'POST'])
 def shop():
     if 'username' not in session:
