@@ -10,11 +10,12 @@ bcrypt = Bcrypt(app)
 
 # make a constant loop that runs continuously in the backend that always checks for overdue payments and deactivates the accounts and dismantles the SIM Card from that account.
 
-def initialize_root_user():
+def initialize_root_user(): # create root employee username root password root
     cursor.execute("SELECT * FROM Employees WHERE employee_name = 'root'")
     root_user = cursor.fetchone()
     if not root_user:
         hashed_password = bcrypt.generate_password_hash('root').decode('utf-8')
+        # the cursor is what we use to navigate through sql using python
         cursor.execute("INSERT INTO Employees (employee_name, contact_info, employee_address, department, job_title, password_hash) VALUES (%s, %s, %s, %s, %s, %s)",
                        ('root', '+96181192894', 'Aramoun, Mount Lebanon, Lebanon', 'Site', 'Manager', hashed_password))
         mysql.commit()
@@ -24,13 +25,13 @@ def initialize_root_user():
 
 initialize_root_user()
 
-def insert_sim_card(IMSI, phone_number, ICCID, PUK, PIN):
-        sql = "INSERT INTO SIM_Cards (IMSI, phone_number, sim_status, ICCID, PUK, PIN) VALUES (%s, %s, %s, %s, %s, %s)"
-        sim_card_data = (IMSI, phone_number, 'Inactive', ICCID, PUK, PIN)
+def insert_sim_card(IMSI, phone_number, ICCID, PUK, PIN): # functio to insert new simcard
+    sql = "INSERT INTO SIM_Cards (IMSI, phone_number, sim_status, ICCID, PUK, PIN) VALUES (%s, %s, %s, %s, %s, %s)"
+    sim_card_data = (IMSI, phone_number, 'Inactive', ICCID, PUK, PIN)
 
-        cursor.execute(sql, sim_card_data)
-        mysql.commit()
-        print(f"SIM card inserted successfully:\n{IMSI}\n{phone_number}\n{ICCID}\n{PUK}\nP{PIN}")
+    cursor.execute(sql, sim_card_data)
+    mysql.commit() # save changes
+    print(f"SIM card inserted successfully:\n{IMSI}\n{phone_number}\n{ICCID}\n{PUK}\nP{PIN}")
 
 def generate_unique_value(existing_values, length=10):
     while True:
@@ -105,6 +106,7 @@ def populate_services_table():
 
 populate_services_table()
 
+# now we begin with the actual backend
 @app.route('/')
 def index():
     session.clear()
