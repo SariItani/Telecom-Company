@@ -3,6 +3,8 @@ import mysql.connector
 
 app = Flask(__name__)
 
+# connect our flask app to a mysql instance of the databse seen in telecom.sql
+
 app.secret_key = 'HELLO YOUR GAMBAYOUTAR HAS VIRUS'
 
 app.config['MYSQL_HOST'] = 'localhost'
