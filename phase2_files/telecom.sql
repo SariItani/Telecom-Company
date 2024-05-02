@@ -184,16 +184,15 @@ CREATE TABLE IF NOT EXISTS Equipment (
 -- LINES TERMINATED BY '\n'
 -- IGNORE 1 ROWS;
 
--- INSERT INTO Customers (customer_name, contact_info, customer_address) VALUES
--- ('John Doe', '+1234567890', '123 Main St'),
--- ('Jane Smith', '+9876543210', '456 Elm St');
-
--- INSERT INTO Accounts (cid, account_type, account_status) VALUES
--- (1, 'Individual', 'Active'),
--- (2, 'Business', 'Inactive');
-
-
 -- sample inserts since the loading of the csv files doesnt wanna work
+
+INSERT INTO Customers (customer_name, contact_info, customer_address) VALUES
+('John Doe', '+1234567890', '123 Main St'),
+('Jane Smith', '+9876543210', '456 Elm St');
+
+INSERT INTO Accounts (cid, account_type, account_status) VALUES
+(1, 'Individual', 'Active'),
+(2, 'Business', 'Inactive');
 
 INSERT INTO Services (service_name, description, price) VALUES
 ('Mobile Data Plan', 'Unlimited data for smartphones', 19.99),
